@@ -1,0 +1,14 @@
+{
+    "test_case": [
+        {
+            "input": "test",
+            "output": "test",
+            "score": "100"
+        },
+        {
+            "input": "test",
+            "output": "test",
+            "score": "100"
+        }
+    ]
+}

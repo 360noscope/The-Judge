@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css?family=Encode+Sans+Condensed:600');
+
+.card-rounded{
+    border-radius: 6px;
+    border-style: none;
+    color: white;
+}
+.pagination{
+    float: right;
+}
+.dataTables_length{
+    float: left;
+}
+.dataTables_filter{
+    float: right;
+}
+#testcase_preview{
+    background-color: black;
+    font-family: 'Encode Sans Condensed', sans-serif;
+    color: white;
+}
