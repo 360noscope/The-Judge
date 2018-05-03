@@ -59,14 +59,20 @@ class Judge
             /*Need to use preg_replace() to remove special control char that coming from docker execute api response
             solution from below
             https://stackoverflow.com/questions/1497885/remove-control-characters-from-php-string
-            */
-            $result = preg_replace('/[\x00-\x1F\x7F]/', '', $this->startExecuter($exec_id));    
-            $converted_res = ($testcase_item["output"] === $result) ? 'true' : 'false';
-            array_push($exec_result, array("case_number" => $case_counter, "result" => $converted_res));
+             */
+            $result = preg_replace('/[\x00-\x1F\x7F]/', '', $this->startExecuter($exec_id));
+            $result = str_replace("Killed","" ,$result);
+            if(strlen($result) != 0){
+                $converted_res = ($testcase_item["output"] === $result) ? 'true' : 'false';
+                array_push($exec_result, array("case_number" => $case_counter, "result" => $converted_res));
+            }else{
+                array_push($exec_result, array("case_number" => $case_counter, "result" => "T"));
+            }
             $case_counter += 1;
         }
         $this->killContainer($container_id);
 
+        //Return result for debug and testing going to submit result page soon!
         return $exec_result;
     }
 
@@ -152,7 +158,6 @@ class Judge
                     "/python-judge:/python-judge"
                 ),
                 "Memory" => (intval($this->memory_limit) * 1048576),
-                "CpuQuota" => (intval($this->time_limit) * 1000000),
                 "OomKillDisable" => false,
                 "AutoRemove" => true,
             )
@@ -190,7 +195,9 @@ class Judge
     private function createExecuter($container_id, $file_name, $input = false, $file_input_name = "")
     {
         global $sandbox_ip, $sandbox_port;
-        $execute_cmd = "python " . $file_name;
+        //We used timeout function to kill python process within time limit
+        //ref. https://busybox.net/downloads/BusyBox.html
+        $execute_cmd = "timeout -t ".$this->time_limit." -s 'SIGKILL' python " . $file_name;
         if ($input == true) {
             $execute_cmd .= " < " . $file_input_name;
         }
@@ -199,9 +206,10 @@ class Judge
             "AttachStdout" => true,
             "AttachStderr" => true,
             "DetachKeys" => "ctrl-p,ctrl-q",
+            "WorkingDir"=>"/python-judge",
             "Tty" => false,
             "Cmd" =>
-                array("/bin/sh", "-c", "cd python-judge && " . $execute_cmd)
+                array("/bin/sh", "-c", $execute_cmd)
         ), JSON_UNESCAPED_SLASHES);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "http://" . $sandbox_ip . "/containers/" . $container_id . "/exec");
