@@ -4,14 +4,21 @@ ini_set('display_errors', 1);
 include_once("config.php");
 class Judge
 {
-    var $student_id, $exercise_id, $exercise_name, $memory_limit, $time_limit, $total_score = 0;
+    var $user_id, $exercise_id, $exercise_name, $memory_limit, $time_limit, $mysql_connection,
+        $db_server, $db_username, $db_password, $db;
     public function __construct()
     {
-        $this->student_id = $_SESSION["stu_id"];
+        global $mysql_server, $username, $password, $database;
+        $this->user_id = $_SESSION["stu_id"];
         $this->exercise_id = $_SESSION["selected_exercise"];
         $this->memory_limit = $_SESSION["mem_limit"];
         $this->time_limit = $_SESSION["time_limit"];
         $this->exercise_name = $_SESSION["selected_exercise_name"];
+        $this->db_server = $mysql_server;
+        $this->db_username = $username;
+        $this->db_password = $password;
+        $this->db = $database;
+        $this->mysql_connection = new mysqli($this->db_server, $this->db_username, $this->db_password, $this->db);
     }
 
     public function judging($file)
@@ -27,12 +34,14 @@ class Judge
             if ($item["input"] !== "-") {
                 array_push($testcase_list, array(
                     "input" => $this->inputUploader($input_counter, $item["input"]),
-                    "output" => $item["output"]
+                    "output" => $item["output"],
+                    "score" => $item["score"]
                 ));
             } else {
                 array_push($testcase_list, array(
                     "input" => "-",
-                    "output" => $item["output"]
+                    "output" => $item["output"],
+                    "score" => $item["score"]
                 ));
             }
             $input_counter += 1;
@@ -45,6 +54,7 @@ class Judge
           5. Kill that container after done
           6. Remove input file if there're any
          */
+
         $exec_result = array();
         $container_id = $this->createCodeContainer();
         $container_start_result = $this->startContainer($container_id);
@@ -61,16 +71,17 @@ class Judge
             https://stackoverflow.com/questions/1497885/remove-control-characters-from-php-string
              */
             $result = preg_replace('/[\x00-\x1F\x7F]/', '', $this->startExecuter($exec_id));
-            $result = str_replace("Killed","" ,$result);
-            if(strlen($result) != 0){
+            $result = str_replace("Killed", "", $result);
+            if (strlen($result) != 0) {
                 $converted_res = ($testcase_item["output"] === $result) ? 'true' : 'false';
-                array_push($exec_result, array("case_number" => $case_counter, "result" => $converted_res));
-            }else{
-                array_push($exec_result, array("case_number" => $case_counter, "result" => "T"));
+                array_push($exec_result, array("case_number" => $case_counter, "result" => $converted_res, "score" => $testcase_item["score"]));
+            } else {
+                array_push($exec_result, array("case_number" => $case_counter, "result" => "T", "score" => $testcase_item["score"]));
             }
             $case_counter += 1;
         }
         $this->killContainer($container_id);
+        $this->recordSession($exec_result, $case_counter);
 
         //Return result for debug and testing going to submit result page soon!
         return $exec_result;
@@ -83,7 +94,7 @@ class Judge
         if ($file_input['name'] <> null) {
             $con = ftp_connect($ftp_host, $ftp_port, $ftp_timeout);
             ftp_login($con, $ftp_user, $ftp_pass);
-            $file_name = "exercise-" . $this->student_id . "-" . $this->exercise_id . ".py";
+            $file_name = "exercise-" . $this->user_id . "-" . $this->exercise_id . ".py";
             $file_path = $ftp_path . $file_name;
             ftp_put($con, $file_path, $file_input['tmp_name'], FTP_ASCII);
             ftp_close($con);
@@ -100,7 +111,7 @@ class Judge
         $file_name = "";
         $con = ftp_connect($ftp_host, $ftp_port, $ftp_timeout);
         ftp_login($con, $ftp_user, $ftp_pass);
-        $file_name = "testcase-" . $this->student_id . "-" . $this->exercise_id . "-" . $input_count . ".txt";
+        $file_name = "testcase-" . $this->user_id . "-" . $this->exercise_id . "-" . $input_count . ".txt";
         $file_path = $ftp_path . $file_name;
         $fp = fopen('php://temp', 'r+');
         fwrite($fp, $input);
@@ -124,19 +135,20 @@ class Judge
 
     private function getCaseInputOutput()
     {
-        global $mysql_server, $username, $password, $database;
+        //global $mysql_server, $username, $password, $database;
         $result = array();
-        $connection = new mysqli($mysql_server, $username, $password, $database);
-        $stmt = $connection->prepare("SELECT input, output FROM exercise_testcase WHERE exercise_id = ?");
+       // $connection = new mysqli($mysql_server, $username, $password, $database);
+        $stmt = $this->mysql_connection->prepare("SELECT input, output, score FROM exercise_testcase WHERE exercise_id = ?");
         $stmt->bind_param("s", $this->exercise_id);
         $stmt->execute();
-        $stmt->bind_result($case_input, $case_output);
+        $stmt->bind_result($case_input, $case_output, $score);
         $input_output_counter = 1;
         while ($stmt->fetch()) {
-            array_push($result, array("input" => $case_input, "output" => $case_output));
+            array_push($result, array("input" => $case_input, "output" => $case_output, "score" => $score));
             $input_output_counter += 1;
         }
         $stmt->close();
+        $this->mysql_connection->close();
         return $result;
     }
 
@@ -197,7 +209,7 @@ class Judge
         global $sandbox_ip, $sandbox_port;
         //We used timeout function to kill python process within time limit
         //ref. https://busybox.net/downloads/BusyBox.html
-        $execute_cmd = "timeout -t ".$this->time_limit." -s 'SIGKILL' python " . $file_name;
+        $execute_cmd = "timeout -t " . $this->time_limit . " -s 'SIGKILL' python " . $file_name;
         if ($input == true) {
             $execute_cmd .= " < " . $file_input_name;
         }
@@ -206,7 +218,7 @@ class Judge
             "AttachStdout" => true,
             "AttachStderr" => true,
             "DetachKeys" => "ctrl-p,ctrl-q",
-            "WorkingDir"=>"/python-judge",
+            "WorkingDir" => "/python-judge",
             "Tty" => false,
             "Cmd" =>
                 array("/bin/sh", "-c", $execute_cmd)
@@ -263,6 +275,37 @@ class Judge
         echo curl_error($ch);
         curl_close($ch);
         return $server_output;
+    }
+
+    private function recordSession($case_result, $total_case)
+    {
+        $passed_counter = 0;
+        $date = new DateTime();
+        $date_str = $date->format('d/m/Y H:i:s a');
+        foreach ($case_result as $result_item) {
+            if ($result_item["result"] === "true") {
+                $passed_counter += 1;
+            }
+        }
+        $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
+        $stmt = $this->mysql_connection->prepare("INSERT INTO exercise_session " .
+            "(user_id, exercise_id, passed_case, complete_date, try_date) VALUES(?, ?, ?, ?, ?)");
+        if ($passed_counter === ($total_case - 1)) {
+            $stmt->bind_param("sssss", $this->user_id, $this->exercise_id, $passed_counter, $date_str, $date_str);
+        } else {
+            $datty = "-";
+            $stmt->bind_param("sssss", $this->user_id, $this->exercise_id, $passed_counter, $datty, $date_str);
+        }
+        $stmt->execute();
+        $stmt->close();
+        $this->mysql_connection->close();
+    }
+
+    private function recordScore()
+    {
+        $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
+        $stmt1 = $this->mysql_connection->prepare("SELECT ");
+        $this->mysql_connection->close();
     }
 
 }
