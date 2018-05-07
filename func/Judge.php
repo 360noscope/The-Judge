@@ -5,7 +5,7 @@ include_once("config.php");
 class Judge
 {
     var $user_id, $exercise_id, $exercise_name, $memory_limit, $time_limit, $mysql_connection,
-        $db_server, $db_username, $db_password, $db;
+        $completed_score, $db_server, $db_username, $db_password, $db;
     public function __construct()
     {
         global $mysql_server, $username, $password, $database;
@@ -14,6 +14,7 @@ class Judge
         $this->memory_limit = $_SESSION["mem_limit"];
         $this->time_limit = $_SESSION["time_limit"];
         $this->exercise_name = $_SESSION["selected_exercise_name"];
+        $this->completed_score = $_SESSION["completed_score"];
         $this->db_server = $mysql_server;
         $this->db_username = $username;
         $this->db_password = $password;
@@ -135,9 +136,7 @@ class Judge
 
     private function getCaseInputOutput()
     {
-        //global $mysql_server, $username, $password, $database;
         $result = array();
-       // $connection = new mysqli($mysql_server, $username, $password, $database);
         $stmt = $this->mysql_connection->prepare("SELECT input, output, score FROM exercise_testcase WHERE exercise_id = ?");
         $stmt->bind_param("s", $this->exercise_id);
         $stmt->execute();
@@ -281,12 +280,14 @@ class Judge
     {
         $passed_counter = 0;
         $is_session_exist = false;
+        $total_score = 0;
         date_default_timezone_set('Asia/Bangkok');
         $date = new DateTime();
         $date_str = $date->format('d/m/Y H:i:s A');
         foreach ($case_result as $result_item) {
             if ($result_item["result"] === "true") {
                 $passed_counter += 1;
+                $total_score += intval($result_item["score"]);
             }
         }
         $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
@@ -295,8 +296,8 @@ class Judge
         $stmt->bind_param("ss", $this->user_id, $this->exercise_id);
         $stmt->execute();
         $stmt->bind_result($countt);
-        while($stmt->fetch()){
-            if($countt > 0){
+        while ($stmt->fetch()) {
+            if ($countt > 0) {
                 $is_session_exist = true;
             }
         }
@@ -306,43 +307,34 @@ class Judge
         $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
         if ($is_session_exist === false) {
             $stmt = $this->mysql_connection->prepare("INSERT INTO exercise_session " .
-                "(user_id, exercise_id, passed_case, complete_date, try_date) VALUES(?, ?, ?, ?, ?)");
+                "(user_id, exercise_id, passed_case, complete_date, try_date, total_score) VALUES(?, ?, ?, ?, ?, ?)");
+            $completed_total_score = $total_score + intval($this->completed_score);
             if ($passed_counter === ($total_case - 1)) {
-                $stmt->bind_param("sssss", $this->user_id, $this->exercise_id, $passed_counter, $date_str, $date_str);
+                $stmt->bind_param(
+                    "ssssss",
+                    $this->user_id,
+                    $this->exercise_id,
+                    $passed_counter,
+                    $date_str,
+                    $date_str,
+                    $completed_total_score
+                );
             } else {
                 $datty = "-";
-                $stmt->bind_param("sssss", $this->user_id, $this->exercise_id, $passed_counter, $datty, $date_str);
+                $stmt->bind_param("sssss", $this->user_id, $this->exercise_id, $passed_counter, $datty, $date_str, $total_score);
             }
         } else {
             if ($passed_counter === ($total_case - 1)) {
                 $stmt = $this->mysql_connection->prepare("UPDATE exercise_session SET " .
-                "try_date=?, complete_date=? WHERE exercise_id = ? AND user_id = ?");
-                $stmt->bind_param("ssss", $date_str, $date_str, $this->exercise_id, $this->user_id);
-            }else{
+                    "try_date=?, complete_date=?, passed_case=?, total_score=? WHERE exercise_id = ? AND user_id = ?");
+                $stmt->bind_param("ssssss", $date_str, $date_str, $passed_counter, $completed_total_score, $this->exercise_id, $this->user_id);
+            } else {
                 $stmt = $this->mysql_connection->prepare("UPDATE exercise_session SET " .
-                "try_date=? WHERE exercise_id = ? AND user_id = ?");
-                $stmt->bind_param("sss", $date_str, $this->exercise_id, $this->user_id);
+                    "try_date=?, passed_case=?, total_score=? WHERE exercise_id = ? AND user_id = ?");
+                $stmt->bind_param("sssss", $date_str, $passed_counter, $total_score, $this->exercise_id, $this->user_id);
             }
         }
         $stmt->execute();
-        $stmt->close();
-        $this->mysql_connection->close();
-    }
-
-    private function recordScore()
-    {
-        $is_session_exist = false;
-        $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
-        $stmt = $this->mysql_connection->prepare("SELECT COUNT(*) FROM exercise_session WHERE " .
-            "user_id = ? AND exercise_id = ?");
-        $stmt->bind_param("ss", $this->user_id, $this->exercise_id);
-        $stmt->execute();
-        $stmt->bind_result($countt);
-        while($stmt->fetch()){
-            if($countt > 0){
-                $is_session_exist = true;
-            }
-        }
         $stmt->close();
         $this->mysql_connection->close();
     }

@@ -20,7 +20,7 @@ if (!isset($_SESSION["stu_id"])) {
     <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 </head>
 
-<body>
+<body onload="get_userstats();">
     <nav class="navbar navbar-expand navbar-dark bg-success">
         <a class="sidebar-toggle text-light mr-3">
             <i class="fa fa-bars"></i>
@@ -33,7 +33,8 @@ if (!isset($_SESSION["stu_id"])) {
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="profile-link" data-toggle="dropdown">
-                        <i class="fa fa-address-card"></i> <?php echo $_SESSION["stu_name"]; ?>
+                        <i class="fa fa-address-card"></i>
+                        <?php echo $_SESSION["stu_name"]; ?>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profile-link">
                         <a class="dropdown-item" href="#">My Profile</a>
@@ -72,8 +73,8 @@ if (!isset($_SESSION["stu_id"])) {
                         <div class="card-body">
                             <div class="card-block">
                                 <i class="fas fa-check fa-3x"></i>
-                                <h4 class="card-title">Completed Problem</h4>
-                                <h5 class="card-text">0</h5>
+                                <h4 class="card-title">Your total score</h4>
+                                <h5 class="card-text" id="total_score"></h5>
                             </div>
                         </div>
                     </div>
@@ -84,7 +85,7 @@ if (!isset($_SESSION["stu_id"])) {
                             <div class="card-block">
                                 <i class="fas fa-terminal fa-3x"></i>
                                 <h4 class="card-title">Remaining Problem</h4>
-                                <h5 class="card-text">0</h5>
+                                <h5 class="card-text" id="rem_exercise"></h5>
                             </div>
                         </div>
                     </div>
@@ -95,7 +96,7 @@ if (!isset($_SESSION["stu_id"])) {
                             <div class="card-block">
                                 <i class="fas fa-list-ol fa-3x"></i>
                                 <h4 class="card-title">Your Rank</h4>
-                                <h5 class="card-text">0 from 300</h5>
+                                <h5 class="card-text" id="ranking"></h5>
                             </div>
                         </div>
                     </div>
@@ -105,7 +106,7 @@ if (!isset($_SESSION["stu_id"])) {
             <div class="row">
                 <div class="col-lg-12">
                     <div class="alert alert-warning" role="alert">
-                    <h4 class="alert-heading">News</h4>
+                        <h4 class="alert-heading">News</h4>
                         Welcome to The Judge!
                     </div>
                 </div>

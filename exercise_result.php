@@ -10,9 +10,8 @@ if (!isset($_SESSION["stu_id"])) {
         header("Location: problem.php");
         die();
     } else {
-        $result = $_SESSION["exercise_result"];
-        $exercise_name = $result["name"];
-        $case_result = $result["result"];
+        $exercise_result = $_SESSION["exercise_result"];
+        $exercise_data = $_SESSION["exercise_data"];
     }
 }
 ?>
@@ -75,7 +74,7 @@ if (!isset($_SESSION["stu_id"])) {
             </ul>
         </nav>
         <div class="content p-4">
-            <h1>Problem: <?php echo $exercise_name; ?></h1>
+            <h1>Problem: <?php echo $exercise_data["exercise_name"]; ?></h1>
             <div class="row">
                 <div class="col-lg-12">
                     <table id="case_result" class="display" width="100%" cellspacing="0">
@@ -85,17 +84,24 @@ if (!isset($_SESSION["stu_id"])) {
                                 <th>Status</th>
                                 <th>Score</th>
                                 <th>Reason</th>
-                                <th>Time(Sec)</th>
                             </tr>
                         </thead>
                         <tbody>
-                           <?php foreach ($case_result as $case) { ?>
+                           <?php foreach ($exercise_result as $result_item) { ?>
                             <tr>
-                                <td><?php echo $case["no"]; ?></td>
-                                <td><?php echo $case["status"]; ?></td>
-                                <td><?php echo $case["score"]; ?></td>
-                                <td><?php echo $case["reason"]; ?></td>
-                                <td><?php echo $case["exec_time"]; ?></td>
+                                <td><?php echo $result_item["case_number"]; ?></td>
+                                <td><?php 
+                                if($result_item["result"] === "T"){
+                                    echo "TIME OUT!";
+                                }else if($result_item["result"] === "true"){
+                                    echo "SUCCESS!";
+                                }else if($result_item["result"] === "false"){
+                                    echo "FAILED";
+                                }else{
+                                    echo "ERROR!";
+                                } ?></td>
+                                <td><?php echo $result_item["score"] ?></td>
+                                <td></td>
                             </tr>
                            <?php 
                         } ?>

@@ -801,6 +801,25 @@ function check_jsoncase_structure(json_string) {
     }
     return result;
 }
+function get_userstats(){
+    $.ajax({
+        url: "func/the_core.php",
+        dataType: "json",
+        cache: false,
+        type: "post",
+        data: {
+            "action": "get_user_totaldata"
+        },
+        success: function (data) {
+            $("#total_score").html(data["total_score"]);
+            $("#rem_exercise").html(data["left_exercise"]);
+            $("#ranking").html(data["ranking"]+" from "+data["total_user"]);
+        },
+        error: function (data) {
+            alert(data);
+        }
+    });
+}
 
 function unenroll_lesson(id) {
     var unenroll_request = $.ajax({

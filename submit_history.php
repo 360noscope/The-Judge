@@ -70,8 +70,8 @@ if(!isset($_SESSION["stu_id"])){
                             <tr>
                                 <th>Problem Name</th>
                                 <th>Percent Complete</th>
-                                <th>Complete Date</th>
-                                <th>Trying Date</th>
+                                <th>Completed Time</th>
+                                <th>Trying Time</th>
                             </tr>
                         </thead>
                         <tbody>

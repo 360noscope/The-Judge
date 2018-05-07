@@ -1,6 +1,6 @@
 CREATE DATABASE  IF NOT EXISTS `the_judge` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
 USE `the_judge`;
--- MySQL dump 10.13  Distrib 5.7.19, for Win32 (AMD64)
+-- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
 -- Host: localhost    Database: the_judge
 -- ------------------------------------------------------
@@ -34,6 +34,7 @@ CREATE TABLE `exercise` (
   `hint` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `difficulty` int(11) NOT NULL DEFAULT '1',
   `exercise_status` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'HIDDEN',
+  `completed_score` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`exercise_id`),
   KEY `lesson_idx` (`lesson_id`),
   CONSTRAINT `lesson` FOREIGN KEY (`lesson_id`) REFERENCES `lesson` (`lesson_id`) ON DELETE CASCADE ON UPDATE NO ACTION
@@ -46,7 +47,7 @@ CREATE TABLE `exercise` (
 
 LOCK TABLES `exercise` WRITE;
 /*!40000 ALTER TABLE `exercise` DISABLE KEYS */;
-INSERT INTO `exercise` VALUES (000003,000004,'teset33','<p>ttt<br></p>','1','1','<p>ttt<br></p>',5,'HIDDEN'),(000004,000004,'test12','<p>test<br></p>','1','2','<p>test<br></p>',5,'HIDDEN');
+INSERT INTO `exercise` VALUES (000003,000004,'teset33','<p>ttt<br></p>','4','4','<p>ttt<br></p>',5,'HIDDEN',0),(000004,000004,'test12','<p>test<br></p>','4','4','<p>test<br></p>',5,'HIDDEN',0);
 /*!40000 ALTER TABLE `exercise` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -59,14 +60,17 @@ DROP TABLE IF EXISTS `exercise_session`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `exercise_session` (
   `session_id` int(7) unsigned zerofill NOT NULL AUTO_INCREMENT,
-  `student_id` varchar(13) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `exercise_id` int(6) unsigned NOT NULL,
+  `user_id` int(13) unsigned zerofill NOT NULL,
+  `exercise_id` int(6) unsigned zerofill NOT NULL,
   `passed_case` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
   `complete_date` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '-',
   `try_date` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '-',
+  `total_score` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`session_id`),
   KEY `session_idx` (`exercise_id`),
-  CONSTRAINT `session` FOREIGN KEY (`exercise_id`) REFERENCES `exercise` (`exercise_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `user_idx` (`user_id`),
+  CONSTRAINT `session` FOREIGN KEY (`exercise_id`) REFERENCES `exercise` (`exercise_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -104,7 +108,7 @@ CREATE TABLE `exercise_testcase` (
 
 LOCK TABLES `exercise_testcase` WRITE;
 /*!40000 ALTER TABLE `exercise_testcase` DISABLE KEYS */;
-INSERT INTO `exercise_testcase` VALUES (000015,000003,100,'test','test'),(000016,000003,100,'test','test'),(000024,000004,100,'test','test'),(000025,000004,100,'test','test');
+INSERT INTO `exercise_testcase` VALUES (000015,000003,100,'test1','test1'),(000016,000003,100,'test2','test2'),(000024,000004,100,'test1','test1'),(000025,000004,100,'test2','test2');
 /*!40000 ALTER TABLE `exercise_testcase` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -170,7 +174,6 @@ DROP TABLE IF EXISTS `user_detail`;
 CREATE TABLE `user_detail` (
   `user_id` int(13) unsigned zerofill NOT NULL,
   `name` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `score` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`),
   CONSTRAINT `detail` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -182,7 +185,7 @@ CREATE TABLE `user_detail` (
 
 LOCK TABLES `user_detail` WRITE;
 /*!40000 ALTER TABLE `user_detail` DISABLE KEYS */;
-INSERT INTO `user_detail` VALUES (0000000000001,'Panupong',0),(0000000000002,'Panupong Prueksa',0),(0000000000006,'kakjung',0),(0000000000007,'ppap',0);
+INSERT INTO `user_detail` VALUES (0000000000001,'Panupong'),(0000000000002,'Panupong Prueksa'),(0000000000006,'kakjung'),(0000000000007,'ppap');
 /*!40000 ALTER TABLE `user_detail` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -204,7 +207,7 @@ CREATE TABLE `user_enrollment` (
   KEY `lesson_idx` (`lesson_id`),
   CONSTRAINT `enroll` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `lesson_user` FOREIGN KEY (`lesson_id`) REFERENCES `lesson` (`lesson_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -213,7 +216,7 @@ CREATE TABLE `user_enrollment` (
 
 LOCK TABLES `user_enrollment` WRITE;
 /*!40000 ALTER TABLE `user_enrollment` DISABLE KEYS */;
-INSERT INTO `user_enrollment` VALUES (0000005,0000000000002,000004,'2018-04-21 19:45:49','2018-04-21 19:45:49');
+INSERT INTO `user_enrollment` VALUES (0000006,0000000000002,000004,'2018-05-03 17:17:13','2018-05-03 17:17:13');
 /*!40000 ALTER TABLE `user_enrollment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -252,4 +255,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-05-02 23:42:15
+-- Dump completed on 2018-05-07 17:16:19

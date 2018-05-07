@@ -66,7 +66,8 @@ if (!isset($_SESSION["stu_id"])) {
             </ul>
         </nav>
         <div class="content p-4">
-            <h1>Exercise: <?php echo $exercise_result["exercise_name"]; ?></h1>
+            <?php echo $exercise_result["done_msg"]; ?>
+            <h1>Exercise: <?php echo $exercise_result["exercise_name"]?></h1>
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card">
