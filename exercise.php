@@ -108,12 +108,13 @@ if (!isset($_SESSION["stu_id"])) {
             </div>
             <div class="row">
                 <div class="col-md-6">
-                <form enctype="multipart/form-data" action="func/the_core.php" method="post" class="form-control">
+                <h5 class="text-danger" id="file_type_warning"></h5>
+                <form id="submit_form" enctype="multipart/form-data" onsubmit="event.preventDefault();" method="post" class="form-control">
                     <label class="text-black" for="user-input">Submit your work here :3</label>
                     <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
                     <input type="hidden" name="action" value="judging" />
-                    <input type="file" name="exercise_file" required />
-                    <button type="submit" class="btn btn-success">I regret nothing!</button>
+                    <input type="file" name="exercise_file" accept=".py" required />
+                    <button type="submit" id="judge-file-submit" class="btn btn-success">I regret nothing!</button>
                 </form>
                 </div>
             </div>
@@ -123,6 +124,7 @@ if (!isset($_SESSION["stu_id"])) {
         <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="
         anonymous "></script>
     <script src="js/bsadmin.js"></script>
+    <script src="js/common.js"></script>
     <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q "

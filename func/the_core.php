@@ -8,6 +8,7 @@ include_once "Lesson.php";
 include_once "Exercise.php";
 include_once "Authentication.php";
 include_once "User.php";
+include_once "config.php";
 $login_check = isset($_SESSION["admin_id"]) || isset($_SESSION["stu_id"]);
 $request_check = isset($_POST["action"]) || isset($_GET["action"]);
 if ($login_check && $request_check) {
@@ -25,9 +26,7 @@ if ($login_check && $request_check) {
         case "judging":
             $judger = new Judge();
             $exercise_result = $judger->judging($_FILES['exercise_file']);
-            $_SESSION["exercise_result"] = $exercise_result;
-            header("Location: /exercise_result.php");
-            die();
+            echo "test";
             break;
         case "get_user_totaldata":
             echo $fetcher->fetch_total_userstats($_SESSION["stu_id"]);

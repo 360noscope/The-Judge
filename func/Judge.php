@@ -5,10 +5,11 @@ include_once("config.php");
 class Judge
 {
     var $user_id, $exercise_id, $exercise_name, $memory_limit, $time_limit, $mysql_connection,
-        $completed_score, $db_server, $db_username, $db_password, $db;
+        $completed_score, $db_server, $db_username, $db_password, $db, $con, $ftp_path;
     public function __construct()
     {
-        global $mysql_server, $username, $password, $database;
+        global $mysql_server, $username, $password, $database, $ftp_host, $ftp_port, $ftp_timeout, 
+        $ftp_path, $ftp_user, $ftp_pass;
         $this->user_id = $_SESSION["stu_id"];
         $this->exercise_id = $_SESSION["selected_exercise"];
         $this->memory_limit = $_SESSION["mem_limit"];
@@ -19,6 +20,9 @@ class Judge
         $this->db_username = $username;
         $this->db_password = $password;
         $this->db = $database;
+        $this->ftp_path = $ftp_path;
+        $this->con = ftp_connect($ftp_host, $ftp_port, $ftp_timeout);
+        ftp_login($this->con, $ftp_user, $ftp_pass);
         $this->mysql_connection = new mysqli($this->db_server, $this->db_username, $this->db_password, $this->db);
     }
 
@@ -47,6 +51,7 @@ class Judge
             }
             $input_counter += 1;
         }
+        ftp_close($this->con);
         /*Execute uploaded resource
           1. Create Container for execute code and bind container volume to host directory {/python-judge}
           2. Start that container peacefuly
@@ -54,7 +59,7 @@ class Judge
           4. Run that execute instance goddamn it!
           5. Kill that container after done
           6. Remove input file if there're any
-         */
+         
 
         $exec_result = array();
         $container_id = $this->createCodeContainer();
@@ -70,7 +75,7 @@ class Judge
             /*Need to use preg_replace() to remove special control char that coming from docker execute api response
             solution from below
             https://stackoverflow.com/questions/1497885/remove-control-characters-from-php-string
-             */
+             
             $result = preg_replace('/[\x00-\x1F\x7F]/', '', $this->startExecuter($exec_id));
             $result = str_replace("Killed", "", $result);
             if (strlen($result) != 0) {
@@ -84,24 +89,19 @@ class Judge
         $this->killContainer($container_id);
         $this->recordSession($exec_result, $case_counter);
 
-        //Return result for debug and testing going to submit result page soon!
-        return $exec_result;
+        //Return result for debug and testing going to submit result page soon!*/
+        return $code_file_name;
     }
 
     private function codeUploader($file_input)
     {
-        global $ftp_host, $ftp_port, $ftp_timeout, $ftp_path, $ftp_user, $ftp_pass;
         $file_name = "";
         if ($file_input['name'] <> null) {
-            $con = ftp_connect($ftp_host, $ftp_port, $ftp_timeout);
-            ftp_login($con, $ftp_user, $ftp_pass);
             $file_name = "exercise-" . $this->user_id . "-" . $this->exercise_id . ".py";
-            $file_path = $ftp_path . $file_name;
-            ftp_put($con, $file_path, $file_input['tmp_name'], FTP_ASCII);
-            ftp_close($con);
+            $file_path = $this->ftp_path . $file_name;
+            ftp_put($this->con, $file_path, $file_input['tmp_name'], FTP_ASCII);
         } else {
-            header("Location: /problem.php");
-            die();
+            $file_name = "error";
         }
         return $file_name;
     }
@@ -113,12 +113,11 @@ class Judge
         $con = ftp_connect($ftp_host, $ftp_port, $ftp_timeout);
         ftp_login($con, $ftp_user, $ftp_pass);
         $file_name = "testcase-" . $this->user_id . "-" . $this->exercise_id . "-" . $input_count . ".txt";
-        $file_path = $ftp_path . $file_name;
+        $file_path = $this->ftp_path . $file_name;
         $fp = fopen('php://temp', 'r+');
         fwrite($fp, $input);
         rewind($fp);
-        ftp_fput($con, $file_path, $fp, FTP_ASCII);
-        ftp_close($con);
+        ftp_fput($this->con, $file_path, $fp, FTP_ASCII);
         return $file_name;
     }
 

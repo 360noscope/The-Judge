@@ -4,11 +4,20 @@ ini_set('display_errors', 1);
 include_once("config.php");
 class Exercise
 {
-    public function add_exercise($name, $detail, $lesson, $exectime, $execmem, $diff, $hint, $case)
+    var $mysql_connection, $db_server, $db_username, $db_password, $db;
+    public function __construct()
     {
         global $mysql_server, $username, $password, $database;
-        $connection = new mysqli($mysql_server, $username, $password, $database);
-        $stmt = $connection->prepare("INSERT INTO exercise (lesson_id, " .
+        $this->db_server = $mysql_server;
+        $this->db_username = $username;
+        $this->db_password = $password;
+        $this->db = $database;
+        $this->mysql_connection = new mysqli($this->db_server, $this->db_username, $this->db_password, $this->db);
+    }
+
+    public function add_exercise($name, $detail, $lesson, $exectime, $execmem, $diff, $hint, $case)
+    {
+        $stmt = $this->mysql_connection->prepare("INSERT INTO exercise (lesson_id, " .
             "exercise_name, " .
             "exercise_detail, " .
             "exec_time, exec_memory, " .
@@ -23,13 +32,10 @@ class Exercise
 
     private function add_testcase($exercise_id, $case)
     {
-        global $mysql_server, $username, $password, $database;
-        $case_data = $case;
-        $connection = new mysqli($mysql_server, $username, $password, $database);
-        $stmt = $connection->prepare("INSERT INTO exercise_testcase (exercise_id, score, input, output) " .
+        $stmt = $this->mysql_connection->prepare("INSERT INTO exercise_testcase (exercise_id, score, input, output) " .
             "VALUES (?, ?, ?, ?)");
-        for ($index = 0; $index < count($case_data); $index++) {
-            $stmt->bind_param("ssss", $exercise_id, $case_data[$index][2], $case_data[$index][0], $case_data[$index][1]);
+        for ($index = 0; $index < count($case); $index++) {
+            $stmt->bind_param("ssss", $exercise_id, $case[$index][2], $case[$index][0], $case[$index][1]);
             $stmt->execute();
         }
         $stmt->close();
@@ -38,9 +44,7 @@ class Exercise
 
     public function update_testcase_json($case_data, $exercise_id){
         $this->clear_exercise_case($exercise_id);
-        global $mysql_server, $username, $password, $database;
-        $connection = new mysqli($mysql_server, $username, $password, $database);
-        $stmt = $connection->prepare("INSERT INTO exercise_testcase (exercise_id, score, input, output) " .
+        $stmt = $this->mysql_connection->prepare("INSERT INTO exercise_testcase (exercise_id, score, input, output) " .
         "VALUES (?, ?, ?, ?)");
         foreach($case_data["test_case"] as $item){
             $stmt->bind_param("ssss", $exercise_id, $item["score"], $item["input"], $item["output"]);
@@ -52,9 +56,7 @@ class Exercise
 
     public function activate_exercise($exercise_id)
     {
-        global $mysql_server, $username, $password, $database;
-        $connection = new mysqli($mysql_server, $username, $password, $database);
-        $stmt = $connection->prepare("UPDATE exercise SET".
+        $stmt = $this->mysql_connection->prepare("UPDATE exercise SET".
         " exercise_status = IF(exercise_status = 'HIDDEN', 'ACTIVATED', 'HIDDEN') ".
         "WHERE exercise_id = ?");
         $stmt->bind_param("s", $exercise_id);
@@ -64,9 +66,7 @@ class Exercise
     }
     public function activate_exercise_by_lesson($lesson_id)
     {
-        global $mysql_server, $username, $password, $database;
-        $connection = new mysqli($mysql_server, $username, $password, $database);
-        $stmt = $connection->prepare("UPDATE exercise SET".
+        $stmt = $this->mysql_connection->prepare("UPDATE exercise SET".
         " exercise_status = IF(exercise_status = 'HIDDEN', 'ACTIVATED', 'HIDDEN') ".
         "WHERE lesson_id = ?");
         $stmt->bind_param("s", $lesson_id);
@@ -79,9 +79,7 @@ class Exercise
     {
         $this->clear_exercise_case($exercise_data["exercise_id"]);
         $this->add_testcase($exercise_data["exercise_id"], $exercise_data["case_data"]);
-        global $mysql_server, $username, $password, $database;
-        $connection = new mysqli($mysql_server, $username, $password, $database);
-        $stmt = $connection->prepare("UPDATE exercise SET exercise_name = ?, exercise_detail = ?, exec_time = ?, " .
+        $stmt = $this->mysql_connection->prepare("UPDATE exercise SET exercise_name = ?, exercise_detail = ?, exec_time = ?, " .
             "exec_memory = ?, hint = ?, difficulty = ?, lesson_id = ? WHERE exercise_id = ?");
         $stmt->bind_param(
             "ssssssss",
@@ -99,18 +97,14 @@ class Exercise
     }
 
     private function clear_exercise_case($selected_exercise){
-        global $mysql_server, $username, $password, $database;
-        $connection = new mysqli($mysql_server, $username, $password, $database);
-        $stmt = $connection->prepare("DELETE FROM exercise_testcase WHERE exercise_id = ?");
+        $stmt = $this->mysql_connection->prepare("DELETE FROM exercise_testcase WHERE exercise_id = ?");
         $stmt->bind_param("s", $selected_exercise);
         $stmt->execute();
         $stmt->close();
     }
 
     public function delete_exercise($exercise_id){
-        global $mysql_server, $username, $password, $database;
-        $connection = new mysqli($mysql_server, $username, $password, $database);
-        $stmt = $connection->prepare("DELETE FROM exercise WHERE exercise_id = ?");
+        $stmt = $this->mysql_connection->prepare("DELETE FROM exercise WHERE exercise_id = ?");
         $stmt->bind_param("s", $exercise_id);
         $stmt->execute();
         $stmt->close();

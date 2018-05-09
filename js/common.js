@@ -73,6 +73,28 @@ $(document).ready(function () {
         $('#add_lesson_modal').modal('toggle');
     });
 
+    $("#judge-file-submit").click(function () {
+        var file = $("input[name='exercise_file']");
+        var parts = file.val().split('.');
+        var ext = parts[parts.length - 1];
+        if (ext === "py") {
+            var form = $('#submit_form')[0];
+            var formData = new FormData(form);
+            $.ajax({
+                type: 'POST',
+                url: 'func/the_core.php',
+                processData: false,
+                contentType: false,
+                data: formData,
+                success: function (data) {
+                    alert(data);
+                },
+            });
+        } else {
+            $("#file_type_warning").html("You can only submit .py file!");
+        }
+    });
+
     //activate edit lesson form
     $("#edit_lesson").click(function () {
         if ($('input[name="lesson_id"]:checked').val() != null) {
@@ -801,7 +823,7 @@ function check_jsoncase_structure(json_string) {
     }
     return result;
 }
-function get_userstats(){
+function get_userstats() {
     $.ajax({
         url: "func/the_core.php",
         dataType: "json",
@@ -813,7 +835,7 @@ function get_userstats(){
         success: function (data) {
             $("#total_score").html(data["total_score"]);
             $("#rem_exercise").html(data["left_exercise"]);
-            $("#ranking").html(data["ranking"]+" from "+data["total_user"]);
+            $("#ranking").html(data["ranking"] + " from " + data["total_user"]);
         },
         error: function (data) {
             alert(data);
