@@ -51,7 +51,6 @@ class Judge
             }
             $input_counter += 1;
         }
-        ftp_close($this->con);
         /*Execute uploaded resource
           1. Create Container for execute code and bind container volume to host directory {/python-judge}
           2. Start that container peacefuly
@@ -59,8 +58,7 @@ class Judge
           4. Run that execute instance goddamn it!
           5. Kill that container after done
           6. Remove input file if there're any
-         
-
+         */
         $exec_result = array();
         $container_id = $this->createCodeContainer();
         $container_start_result = $this->startContainer($container_id);
@@ -75,7 +73,7 @@ class Judge
             /*Need to use preg_replace() to remove special control char that coming from docker execute api response
             solution from below
             https://stackoverflow.com/questions/1497885/remove-control-characters-from-php-string
-             
+             */
             $result = preg_replace('/[\x00-\x1F\x7F]/', '', $this->startExecuter($exec_id));
             $result = str_replace("Killed", "", $result);
             if (strlen($result) != 0) {
@@ -86,11 +84,13 @@ class Judge
             }
             $case_counter += 1;
         }
+        $this->removeInput($testcase_list);
+        ftp_close($this->con);
         $this->killContainer($container_id);
         $this->recordSession($exec_result, $case_counter);
 
-        //Return result for debug and testing going to submit result page soon!*/
-        return $code_file_name;
+        //Return result for debug and testing going to submit result page soon!
+        return $exec_result;
     }
 
     private function codeUploader($file_input)
@@ -123,14 +123,10 @@ class Judge
 
     private function removeInput($input_list)
     {
-        global $ftp_host, $ftp_port, $ftp_timeout, $ftp_path, $ftp_user, $ftp_pass;
-        $con = ftp_connect($ftp_host, $ftp_port, $ftp_timeout);
-        ftp_login($con, $ftp_user, $ftp_pass);
         foreach ($input_list as $file_input) {
             $file_path = $ftp_path . $file_input["file_name"];
-            ftp_delete($con, $file_path);
+            ftp_delete($this->con, $file_path);
         }
-        ftp_close($con);
     }
 
     private function getCaseInputOutput()
@@ -320,7 +316,7 @@ class Judge
                 );
             } else {
                 $datty = "-";
-                $stmt->bind_param("sssss", $this->user_id, $this->exercise_id, $passed_counter, $datty, $date_str, $total_score);
+                $stmt->bind_param("ssssss", $this->user_id, $this->exercise_id, $passed_counter, $datty, $date_str, $total_score);
             }
         } else {
             if ($passed_counter === ($total_case - 1)) {
