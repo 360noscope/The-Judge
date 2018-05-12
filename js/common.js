@@ -86,8 +86,12 @@ $(document).ready(function () {
                 processData: false,
                 contentType: false,
                 data: formData,
+                beforeSend: function () {
+                    $('#loading_modal').modal('toggle');
+                },
                 success: function (data) {
-                    alert(data);
+                    $('#loading_modal').modal('hide');
+                    window.location.replace("/problem.php");
                 },
             });
         } else {
