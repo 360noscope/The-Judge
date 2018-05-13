@@ -8,8 +8,8 @@ class Judge
         $completed_score, $db_server, $db_username, $db_password, $db, $con, $ftp_path;
     public function __construct()
     {
-        global $mysql_server, $username, $password, $database, $ftp_host, $ftp_port, $ftp_timeout, 
-        $ftp_path, $ftp_user, $ftp_pass;
+        global $mysql_server, $username, $password, $database, $ftp_host, $ftp_port, $ftp_timeout,
+            $ftp_path, $ftp_user, $ftp_pass;
         $this->user_id = $_SESSION["stu_id"];
         $this->exercise_id = $_SESSION["selected_exercise"];
         $this->memory_limit = $_SESSION["mem_limit"];
@@ -108,10 +108,7 @@ class Judge
 
     private function inputUploader($input_count, $input)
     {
-        global $ftp_host, $ftp_port, $ftp_timeout, $ftp_path, $ftp_user, $ftp_pass;
         $file_name = "";
-        $con = ftp_connect($ftp_host, $ftp_port, $ftp_timeout);
-        ftp_login($con, $ftp_user, $ftp_pass);
         $file_name = "testcase-" . $this->user_id . "-" . $this->exercise_id . "-" . $input_count . ".txt";
         $file_path = $this->ftp_path . $file_name;
         $fp = fopen('php://temp', 'r+');
@@ -124,8 +121,10 @@ class Judge
     private function removeInput($input_list)
     {
         foreach ($input_list as $file_input) {
-            $file_path = $ftp_path . $file_input["file_name"];
-            ftp_delete($this->con, $file_path);
+            if ($file_input["input"] !== "-") {
+                $file_path = $this->ftp_path . $file_input["input"];
+                ftp_delete($this->con, $file_path);
+            }
         }
     }
 
@@ -273,6 +272,7 @@ class Judge
 
     private function recordSession($case_result, $total_case)
     {
+        mysqli_report(MYSQLI_REPORT_ALL);
         $passed_counter = 0;
         $is_session_exist = false;
         $total_score = 0;
@@ -285,6 +285,7 @@ class Judge
                 $total_score += intval($result_item["score"]);
             }
         }
+
         $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
         $stmt = $this->mysql_connection->prepare("SELECT COUNT(*) FROM exercise_session WHERE " .
             "user_id = ? AND exercise_id = ?");
@@ -299,11 +300,11 @@ class Judge
         $stmt->close();
         $this->mysql_connection->close();
 
+        $completed_total_score = $total_score + intval($this->completed_score);
         $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
         if ($is_session_exist === false) {
             $stmt = $this->mysql_connection->prepare("INSERT INTO exercise_session " .
                 "(user_id, exercise_id, passed_case, complete_date, try_date, total_score) VALUES(?, ?, ?, ?, ?, ?)");
-            $completed_total_score = $total_score + intval($this->completed_score);
             if ($passed_counter === ($total_case - 1)) {
                 $stmt->bind_param(
                     "ssssss",
@@ -318,19 +319,21 @@ class Judge
                 $datty = "-";
                 $stmt->bind_param("ssssss", $this->user_id, $this->exercise_id, $passed_counter, $datty, $date_str, $total_score);
             }
+            $stmt->execute();
+            $stmt->close();
         } else {
+            $stmt = $this->mysql_connection->prepare("UPDATE exercise_session SET " .
+                "try_date=?, complete_date=?, passed_case=?, total_score=? WHERE exercise_id = ? AND user_id = ?");
             if ($passed_counter === ($total_case - 1)) {
-                $stmt = $this->mysql_connection->prepare("UPDATE exercise_session SET " .
-                    "try_date=?, complete_date=?, passed_case=?, total_score=? WHERE exercise_id = ? AND user_id = ?");
                 $stmt->bind_param("ssssss", $date_str, $date_str, $passed_counter, $completed_total_score, $this->exercise_id, $this->user_id);
             } else {
-                $stmt = $this->mysql_connection->prepare("UPDATE exercise_session SET " .
-                    "try_date=?, passed_case=?, total_score=? WHERE exercise_id = ? AND user_id = ?");
-                $stmt->bind_param("sssss", $date_str, $passed_counter, $total_score, $this->exercise_id, $this->user_id);
+                $test = $total_score;
+                $datty = "-";
+                $stmt->bind_param("ssssss", $date_str, $datty, $passed_counter, $total_score, $this->exercise_id, $this->user_id);
             }
+            $stmt->execute();
+            $stmt->close();
         }
-        $stmt->execute();
-        $stmt->close();
         $this->mysql_connection->close();
     }
 

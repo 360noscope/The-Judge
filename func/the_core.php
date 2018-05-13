@@ -26,7 +26,7 @@ if ($login_check && $request_check) {
         case "judging":
             $judger = new Judge();
             $exercise_result = $judger->judging($_FILES['exercise_file']);
-            echo $exercise_result;
+            $_SESSION["exercise_result"] = $exercise_result;
             break;
         case "get_user_totaldata":
             echo $fetcher->fetch_total_userstats($_SESSION["stu_id"]);

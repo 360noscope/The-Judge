@@ -91,7 +91,7 @@ $(document).ready(function () {
                 },
                 success: function (data) {
                     $('#loading_modal').modal('hide');
-                    window.location.replace("/problem.php");
+                    window.location.replace("/exercise_result.php");
                 },
             });
         } else {
