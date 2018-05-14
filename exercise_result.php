@@ -100,8 +100,8 @@ if (!isset($_SESSION["stu_id"])) {
                                 }else{
                                     echo "ERROR!";
                                 } ?></td>
-                                <td><?php echo $result_item["score"] ?></td>
-                                <td></td>
+                                <td><?php echo $result_item["score"]; ?></td>
+                                <td><?php echo $result_item["output"]; ?></td>
                             </tr>
                            <?php 
                         } ?>

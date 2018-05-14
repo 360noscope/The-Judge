@@ -78,9 +78,9 @@ class Judge
             $result = str_replace("Killed", "", $result);
             if (strlen($result) != 0) {
                 $converted_res = ($testcase_item["output"] === $result) ? 'true' : 'false';
-                array_push($exec_result, array("case_number" => $case_counter, "result" => $converted_res, "score" => $testcase_item["score"]));
+                array_push($exec_result, array("case_number" => $case_counter, "result" => $converted_res, "output"=>$result, "score" => $testcase_item["score"]));
             } else {
-                array_push($exec_result, array("case_number" => $case_counter, "result" => "T", "score" => $testcase_item["score"]));
+                array_push($exec_result, array("case_number" => $case_counter, "result" => "T", "output"=>$result, "score" => $testcase_item["score"]));
             }
             $case_counter += 1;
         }
@@ -272,7 +272,6 @@ class Judge
 
     private function recordSession($case_result, $total_case)
     {
-        mysqli_report(MYSQLI_REPORT_ALL);
         $passed_counter = 0;
         $is_session_exist = false;
         $total_score = 0;
@@ -336,6 +335,5 @@ class Judge
         }
         $this->mysql_connection->close();
     }
-
 }
 ?>
