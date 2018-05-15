@@ -194,7 +194,7 @@ if ($login_check && $request_check) {
     $authener = new Authentication();
     $result = $authener->login($_POST["username"], $_POST["password"]);
     if ($result[0]["flag"] == "ok") {
-        if ($result[0]["type"] == "ADMIN") {
+        if ($result[0]["type"] === "TEACHER") {
             header("Location: /admin.php");
             die();
         } else {

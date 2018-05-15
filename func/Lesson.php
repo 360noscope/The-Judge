@@ -60,5 +60,10 @@ class Lesson
         $stmt->close();
         return "Done deleting lesson!";
     }
+    
+    public function __destruct()
+    {
+        $this->mysql_connection->close();
+    }
 }
 ?>

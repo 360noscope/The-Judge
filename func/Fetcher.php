@@ -31,9 +31,7 @@ class fetcher
             }
         }
         $stmt->close();
-        $this->mysql_connection->close();
 
-        $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
         $stmt = $this->mysql_connection->prepare("SELECT exercise_name, exercise_detail, difficulty, hint, exec_time, exec_memory, completed_score FROM exercise WHERE " .
             "exercise_id = ?");
         $stmt->bind_param("s", $id);
@@ -83,7 +81,6 @@ class fetcher
             );
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
@@ -93,7 +90,7 @@ class fetcher
         $stmt = $this->mysql_connection->prepare("SELECT exercise.exercise_id, exercise.exercise_name, " .
             "exercise.difficulty, lesson.lesson_name FROM exercise JOIN user_enrollment ON exercise.lesson_id = user_enrollment.lesson_id " .
             "JOIN lesson ON exercise.lesson_id = lesson.lesson_id " .
-            "WHERE user_enrollment.user_id = ?");
+            "WHERE user_enrollment.user_id = ? AND exercise.exercise_status != 'HIDDEN'");
         $stmt->bind_param("s", $_SESSION["stu_id"]);
         $stmt->execute();
         $stmt->bind_result($id, $name, $difficulty, $lesson_name);
@@ -142,7 +139,6 @@ class fetcher
             array_push($result, array($name, $lesson_name, $star, "<button type='submit' class='btn btn-danger' name='exercise_id' value='" . $id . "'>Go!</button>"));
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
@@ -164,7 +160,6 @@ class fetcher
             array_push($result, array($exercise_name, $percentage, $completed_date, $try_date));
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
@@ -184,7 +179,6 @@ class fetcher
             ));
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
@@ -202,7 +196,6 @@ class fetcher
             ));
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode($result);
     }
 
@@ -227,7 +220,6 @@ class fetcher
             ));
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
@@ -256,7 +248,6 @@ class fetcher
             );
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode(array("exercise_data" => $result, "testcase_data" => $this->fetch_exercise_testcase($exercise_id)));
     }
 
@@ -276,7 +267,6 @@ class fetcher
             ));
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return $result;
     }
 
@@ -291,7 +281,6 @@ class fetcher
             $result = $name;
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return $result;
     }
 
@@ -309,7 +298,6 @@ class fetcher
             ));
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
@@ -326,7 +314,6 @@ class fetcher
             $result = array("username" => $username, "name" => $name, "role" => $role);
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode($result);
     }
 
@@ -342,11 +329,9 @@ class fetcher
             $total_score += intval($score);
         }
         $stmt->close();
-        $this->mysql_connection->close();
 
         //Get user remaining exercise to do
         $remaining_exercise = 0;
-        $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
         $stmt = $this->mysql_connection->prepare("SELECT COUNT(*) FROM exercise " .
             "LEFT JOIN exercise_session ON exercise.exercise_id = exercise_session.exercise_id " .
             "WHERE exercise_session.complete_date = '-' AND exercise_session.user_id = ?");
@@ -357,23 +342,19 @@ class fetcher
             $remaining_exercise = intval($exercise_count);
         }
         $stmt->close();
-        $this->mysql_connection->close();
 
         //Get total user
         $total_user = 0;
-        $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
         $stmt = $this->mysql_connection->prepare("SELECT COUNT(*) FROM users");
         $stmt->execute();
         $stmt->bind_result($count);
-        while($stmt->fetch()){
+        while ($stmt->fetch()) {
             $total_user = $count;
         }
         $stmt->close();
-        $this->mysql_connection->close();
 
         //Get user rank
         $ranking = 0;
-        $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
         $stmt = $this->mysql_connection->prepare("SELECT  @curRank := @curRank + 1 AS rank, user_id AS userid " .
             "FROM users p, (SELECT @curRank := 0) s " .
             "ORDER BY CAST(ifnull((SELECT sum(total_score) FROM exercise_session WHERE user_id = userid), 0) " .
@@ -386,14 +367,18 @@ class fetcher
             }
         }
         $stmt->close();
-        $this->mysql_connection->close();
 
         return json_encode(array(
             "total_score" => $total_score,
             "left_exercise" => $remaining_exercise,
-            "total_user"=>$total_user,
+            "total_user" => $total_user,
             "ranking" => $ranking
         ));
+    }
+
+    public function __destruct()
+    {
+        $this->mysql_connection->close();
     }
 }
 ?>

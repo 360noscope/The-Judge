@@ -136,13 +136,13 @@ if (!isset($_SESSION["admin_id"])) {
                             <div class="col-md">
                                 <div class="form-group">
                                     <label>Execution Time (SEC)</label>
-                                    <input name="add_exercise_exectime" min="1" type="number" class="form-control" required />
+                                    <input name="add_exercise_exectime" min="4" type="number" class="form-control" required />
                                 </div>
                             </div>
                             <div class="col-md">
                                 <div class="form-group">
                                     <label>Execution Memory (MB)</label>
-                                    <input name="add_exercise_execmem" min="1" type="number" class="form-control" required>
+                                    <input name="add_exercise_execmem" min="4" type="number" class="form-control" required>
                                 </div>
                             </div>
                         </div>

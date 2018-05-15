@@ -109,5 +109,10 @@ class Exercise
         $stmt->execute();
         $stmt->close();
     }
+    
+    public function __destruct()
+    {
+        $this->mysql_connection->close();
+    }
 }
 ?>

@@ -1,4 +1,31 @@
 $(document).ready(function () {
+    $(function () {
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
+
+        if(dd<10) {
+            dd = '0'+dd
+        } 
+        
+        if(mm<10) {
+            mm = '0'+mm
+        } 
+        
+        today = mm + '/' + dd + '/' + yyyy;
+
+        $('input[name="exam_start_time"]').daterangepicker({
+            timePicker: true,
+            timePickerIncrement: 30,
+            minDate: today,
+            locale: {
+                format: 'DD/MM/YYYY h:mm A'
+            }
+        });
+
+    });
+
     //start - student exercise table part
     $('#exercise').DataTable({
         "processing": true,
@@ -162,6 +189,8 @@ $(document).ready(function () {
                 "action": "edit_lesson"
             },
             success: function (data) {
+                $("#edit_lesson_name").val("");
+                $("#edit_lesson_detail").val("");
                 $('#edit_lesson_modal').modal('hide');
                 $('#admin_Lesson').DataTable().ajax.reload();
             },
@@ -273,14 +302,25 @@ $(document).ready(function () {
     });
 
     $("#add_exercise_submit").click(function () {
+        var null_case = false;
         if (testcase_index - 1 >= 1) {
             var case_data = [];
             for (index = 1; index < testcase_index; index++) {
                 var input = $('input[name="add_input_case' + index + '"]').val();
                 var output = $('input[name="add_output_case' + index + '"]').val();
                 var score = $('input[name="add_score_case' + index + '"]').val();
-                case_data[index - 1] = [input, output, score];
+                if (input == "" || output == "" || score == "") {
+                    null_case = true;
+                } else {
+                    case_data[index - 1] = [input, output, score];
+                }
             }
+
+        } else {
+            alert("Please add test case!");
+        }
+
+        if (null_case == false) {
             var name = $("input[name='add_exercise_name']").val();
             var detail = $("textarea[name='add_exercise_detail']").val();
             var lesson = $("select[name='add_exercise_lesson']").val();
@@ -376,23 +416,25 @@ $(document).ready(function () {
         var fr = new FileReader();
         fr.onload = function (e) {
             var result = JSON.parse(e.target.result);
-            $.ajax({
-                url: "func/the_core.php",
-                cache: false,
-                type: "post",
-                data: {
-                    "action": "update_json_testcase",
-                    "case_data": result,
-                    "exercise_id": exercise_id
-                },
-                success: function (data) {
-                    $('#add_testcase_file').modal("hide");
-                    $('#admin_exercise').DataTable().ajax.reload();
-                },
-                error: function (data) {
-                    alert(data);
-                }
-            });
+            if (check_jsoncase_structure(result)) {
+                $.ajax({
+                    url: "func/the_core.php",
+                    cache: false,
+                    type: "post",
+                    data: {
+                        "action": "update_json_testcase",
+                        "case_data": result,
+                        "exercise_id": exercise_id
+                    },
+                    success: function (data) {
+                        $('#add_testcase_file').modal("hide");
+                        $('#admin_exercise').DataTable().ajax.reload();
+                    },
+                    error: function (data) {
+                        alert(data);
+                    }
+                });
+            }
         }
         fr.readAsText(files.item(0));
     });
@@ -815,11 +857,23 @@ function check_jsoncase_structure(json_string) {
             if (!json_string["test_case"][i].hasOwnProperty('input')) {
                 result = false;
             } else {
-                if (!json_string["test_case"][i].hasOwnProperty('output')) {
+                if (json_string["test_case"][i]["input"] == " " || json_string["test_case"][i]["input"] == "") {
                     result = false;
                 } else {
-                    if (!json_string["test_case"][i].hasOwnProperty('score')) {
+                    if (!json_string["test_case"][i].hasOwnProperty('output')) {
                         result = false;
+                    } else {
+                        if (json_string["test_case"][i]["output"] == " " || json_string["test_case"][i]["output"] == "") {
+                            result = false;
+                        } else {
+                            if (!json_string["test_case"][i].hasOwnProperty('score')) {
+                                result = false;
+                            } else {
+                                if (json_string["test_case"][i]["score"] == " " || json_string["test_case"][i]["score"] == "") {
+                                    result = false;
+                                }
+                            }
+                        }
                     }
                 }
             }

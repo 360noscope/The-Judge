@@ -7,6 +7,7 @@ if (!isset($_SESSION["admin_id"])) {
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,10 +17,12 @@ if (!isset($_SESSION["admin_id"])) {
         crossorigin="anonymous">
     <link rel="stylesheet" href="css/bsadmin.css">
     <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/datetimepicker/daterangepicker.css">
     <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 </head>
+
 <body>
-<nav class="navbar navbar-expand navbar-dark bg-success">
+    <nav class="navbar navbar-expand navbar-dark bg-success">
         <a class="sidebar-toggle text-light mr-3">
             <i class="fa fa-bars"></i>
         </a>
@@ -31,7 +34,8 @@ if (!isset($_SESSION["admin_id"])) {
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="profile-link" data-toggle="dropdown">
-                        <i class="fa fa-address-card"></i> <?php echo $_SESSION["admin_name"]; ?>
+                        <i class="fa fa-address-card"></i>
+                        <?php echo $_SESSION["admin_name"]; ?>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profile-link">
                         <a class="dropdown-item" href="#">My Profile</a>
@@ -72,14 +76,33 @@ if (!isset($_SESSION["admin_id"])) {
             </ul>
         </nav>
         <div class="content p-4">
-            <div class="row">
-                <div class="col-lg-12">
-                    
+            <h1>Examination Mode</h1>
+            <form method="POST" onsubmit="event.preventDefault();">
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        <label>
+                            <b>Name of Examination</b>
+                        </label>
+                        <input name="exam_lesson_name" class="form-control" required/>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label>
+                            <b>Examination time</b>
+                        </label>
+                        <input name="exam_start_time" class="form-control" required/>
+                    </div>
                 </div>
-            </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-danger">Let torture!</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="js/datetimepicker/moment.min.js"></script>
+    <script src="js/datetimepicker/daterangepicker.js"></script>
     <script src="js/bsadmin.js"></script>
     <script src="js/common.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
@@ -87,4 +110,5 @@ if (!isset($_SESSION["admin_id"])) {
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
 </body>
+
 </html>
