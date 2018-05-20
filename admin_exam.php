@@ -85,24 +85,53 @@ if (!isset($_SESSION["admin_id"])) {
                         </label>
                         <input name="exam_lesson_name" class="form-control" required/>
                     </div>
-                    <div class="col-md-6 form-group">
+                   
+                </div>
+                <div class="row">
+                    <div class="col-md-3 form-group">
                         <label>
-                            <b>Examination time</b>
+                            <b>User group to be in exam</b>
                         </label>
-                        <input name="exam_start_time" class="form-control" required/>
+                        <select name="exam_user_group" class="form-control">
+                        </select>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-3">
-                        <button type="submit" class="btn btn-danger">Let torture!</button>
+                        <button type="submit" id="exam_schedule_form" class="btn btn-danger">Let torture!</button>
                     </div>
                 </div>
             </form>
+            <hr />
+            <h3>On going exam</h1>
+                <form onsubmit="event.preventDefault();">
+                    <div class="row">
+                        <table id="exam_ontime" class="display" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Name</th>
+                                    <th>Exam Owner</th>
+                                    <th>Class</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button id="terminate_exam" class="btn btn-danger">Terminate Exam</button>
+                        </div>
+                    </div>
+                </form>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
     <script src="js/datetimepicker/moment.min.js"></script>
     <script src="js/datetimepicker/daterangepicker.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
     <script src="js/bsadmin.js"></script>
     <script src="js/common.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"

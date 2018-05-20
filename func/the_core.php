@@ -189,6 +189,26 @@ if ($login_check && $request_check) {
                 $userer->delete_user($_POST["user_id"]);
             }
             break;
+        case "fetch_user_group":
+            if ($_SESSION["admin_id"] != null) {
+                echo $fetcher->fetch_user_group();
+            }
+            break;
+        case "fetch_examination":
+            if ($_SESSION["admin_id"] != null) {
+                echo $fetcher->fetch_examination();
+            }
+            break;
+        case "exam_activate":
+            if ($_SESSION["admin_id"] != null) {
+                $lessoner->activate_exam_mode($_SESSION["admin_id"]);
+            }
+            break;
+        case "exam_deactivate":
+            if ($_SESSION["admin_id"] != null) {
+                $lessoner->deactivate_exam_mode($_SESSION["admin_id"]);
+            }
+            break;
     }
 } else if (isset($_POST["username"]) && isset($_POST["password"])) {
     $authener = new Authentication();

@@ -83,8 +83,6 @@ if (!isset($_SESSION["admin_id"])) {
                                 <tr>
                                     <th></th>
                                     <th>Name</th>
-                                    <th>Score</th>
-                                    <th>Role</th>
                                 </tr>
                             </thead>
                             <tbody>

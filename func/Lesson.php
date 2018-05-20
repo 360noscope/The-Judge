@@ -60,6 +60,43 @@ class Lesson
         $stmt->close();
         return "Done deleting lesson!";
     }
+
+    public function activate_exam_mode($owner_id){
+        $lesson_list = array();
+        $stmt = $this->mysql_connection->prepare("INSERT INTO exercise_temp ".
+        "SELECT * FROM exercise WHERE lesson IN (SELECT lesson_id FROM lesson WHERE owner_id = ?)");
+        $stmt->bind_param("s", $owner_id);
+        $stmt->execute();
+        $stmt->bind_result($les_id);
+        while($stmt->fetch()){
+            array_push($lesson_list, $les_id);
+        }
+        $stmt->close();
+
+        /*$stmt = $this->mysql_connection->prepare("INSERT INTO lesson_temp ".
+        "SELECT * FROM lesson WHERE owner_id = ?");
+        $stmt->bind_param("s", $owner_id);
+        $stmt->execute();
+        $stmt->close();
+
+        $stmt = $this->mysql_connection->prepare("DELETE FROM lesson WHERE owner_id = ?");
+        $stmt->bind_param("s", $owner_id);
+        $stmt->execute();
+        $stmt->close();*/
+    }
+
+    public function deactivate_exam_mode($owner_id){
+        $stmt = $this->mysql_connection->prepare("INSERT INTO lesson ".
+        "SELECT * FROM lesson_temp WHERE owner_id = ?");
+        $stmt->bind_param("s", $owner_id);
+        $stmt->execute();
+        $stmt->close();
+
+        $stmt = $this->mysql_connection->prepare("DELETE FROM lesson_temp WHERE owner_id = ?");
+        $stmt->bind_param("s", $owner_id);
+        $stmt->execute();
+        $stmt->close();
+    }
     
     public function __destruct()
     {

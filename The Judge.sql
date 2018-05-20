@@ -18,6 +18,38 @@ USE `the_judge`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `examination`
+--
+
+DROP TABLE IF EXISTS `examination`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `examination` (
+  `exam_id` int(6) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `exam_name` varchar(400) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exam_owner` int(13) unsigned zerofill NOT NULL,
+  `user_group` int(6) unsigned zerofill NOT NULL,
+  `exam_time` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exam_status` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'SCHEDULED',
+  PRIMARY KEY (`exam_id`),
+  KEY `owner_idx` (`exam_owner`),
+  KEY `user_g` (`user_group`),
+  CONSTRAINT `owner` FOREIGN KEY (`exam_owner`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `user_g` FOREIGN KEY (`user_group`) REFERENCES `user_group` (`group_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `examination`
+--
+
+LOCK TABLES `examination` WRITE;
+/*!40000 ALTER TABLE `examination` DISABLE KEYS */;
+INSERT INTO `examination` VALUES (000001,'test',0000000000001,000001,'16/05/2018 12:00 AM - 16/05/2018 11:59 PM','ON PROCESS');
+/*!40000 ALTER TABLE `examination` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `exercise`
 --
 
@@ -124,6 +156,7 @@ CREATE TABLE `lesson` (
   `owner_id` int(13) unsigned zerofill NOT NULL,
   `lesson_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `lesson_detail` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'DISPLAYED',
   PRIMARY KEY (`lesson_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -134,7 +167,7 @@ CREATE TABLE `lesson` (
 
 LOCK TABLES `lesson` WRITE;
 /*!40000 ALTER TABLE `lesson` DISABLE KEYS */;
-INSERT INTO `lesson` VALUES (000004,0000000000001,'Problem Solving','GG'),(000006,0000000000001,'Python Da Fuq','Python FTW!');
+INSERT INTO `lesson` VALUES (000004,0000000000001,'Problem Solving','GG','DISPLAYED'),(000006,0000000000001,'Python Da Fuq','Python FTW!','DISPLAYED');
 /*!40000 ALTER TABLE `lesson` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -207,7 +240,7 @@ CREATE TABLE `user_enrollment` (
   KEY `lesson_idx` (`lesson_id`),
   CONSTRAINT `enroll` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `lesson_user` FOREIGN KEY (`lesson_id`) REFERENCES `lesson` (`lesson_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -281,4 +314,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-05-15 17:18:34
+-- Dump completed on 2018-05-16 16:39:49

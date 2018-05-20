@@ -1,21 +1,19 @@
 $(document).ready(function () {
-    $(function () {
+
+    //start examination mode part
+    /*$(function () {
         var today = new Date();
         var dd = today.getDate();
         var mm = today.getMonth() + 1; //January is 0!
         var yyyy = today.getFullYear();
-
-        if(dd<10) {
-            dd = '0'+dd
-        } 
-        
-        if(mm<10) {
-            mm = '0'+mm
-        } 
-        
+        if (dd < 10) {
+            dd = '0' + dd
+        }
+        if (mm < 10) {
+            mm = '0' + mm
+        }
         today = mm + '/' + dd + '/' + yyyy;
-
-        $('input[name="exam_start_time"]').daterangepicker({
+        $('input[name="exam_time_range"]').daterangepicker({
             timePicker: true,
             timePickerIncrement: 30,
             minDate: today,
@@ -23,8 +21,71 @@ $(document).ready(function () {
                 format: 'DD/MM/YYYY h:mm A'
             }
         });
+    });*/
 
+    $("#exam_schedule_form").click(function(){
+        var lesson_name = $("input[name='exam_lesson_name']").val(), 
+        user_group = $("select[name='exam_user_group']").val();
+        $.ajax({
+            type: 'POST',
+            url: 'func/the_core.php',
+            data: {
+                "action": "exam_activate",
+                "lesson_name":lesson_name,
+                "user_group":user_group
+            },
+            success: function (data) {
+                $('#exam_ontime').DataTable().ajax.reload();
+            }
+        });
     });
+
+    $("#terminate_exam").click(function(){
+        var selected_exam = $("select[name='exam_id']").val();
+        $.ajax({
+            type: 'POST',
+            url: 'func/the_core.php',
+            data: {
+                "action": "exam_deactivate",
+                "exam_id":selected_exam
+            },
+            success: function (data) {
+                $('#exam_ontime').DataTable().ajax.reload();
+            }
+        });
+    });
+
+    $.ajax({
+        type: 'POST',
+        url: 'func/the_core.php',
+        data: {
+            "action": "fetch_user_group"
+        },
+        success: function (data) {
+            var result = JSON.parse(data);
+            for (var index = 0; index < result.length; index++) {
+                if(result[index].group_name !== "TEACHER"){
+                    $("select[name='exam_user_group']").append($('<option>', {
+                        value: result[index].group_id,
+                        text: result[index].group_name
+                    }));
+                }   
+            }
+        }
+    });
+
+    $("#exam_ontime").DataTable({
+        "processing": true,
+        "autoWidth": true,
+        "info": false,
+        "ajax": {
+            "url": "func/the_core.php",
+            "type": "POST",
+            "data": { "action": "fetch_examination" }
+        }
+    });
+
+    //end examination mode part
 
     //start - student exercise table part
     $('#exercise').DataTable({
