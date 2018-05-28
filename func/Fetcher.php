@@ -62,7 +62,7 @@ class fetcher
         $result = array();
         $stmt = $this->mysql_connection->prepare("SELECT @les_id := lesson_id, lesson_name, lesson_detail, " .
             "(SELECT COUNT(*) FROM user_enrollment WHERE user_id = ? AND lesson_id = @les_id) FROM lesson " .
-            "WHERE status = 'DISPLAYED'");
+            "WHERE is_exam = 'NO'");
         $stmt->bind_param("s", $_SESSION["stu_id"]);
         $stmt->execute();
         $stmt->bind_result($id, $name, $detail, $enrolled);
@@ -166,13 +166,13 @@ class fetcher
     public function fetch_admin_lesson($admin_id)
     {
         $result = array();
-        $stmt = $this->mysql_connection->prepare("SELECT lesson_id, lesson_name, lesson_detail FROM lesson WHERE owner_id = ?");
+        $stmt = $this->mysql_connection->prepare("SELECT lesson_id, lesson_name, lesson_detail FROM lesson WHERE owner_id = ? AND is_exam = 'NO'");
         $stmt->bind_param("s", $admin_id);
         $stmt->execute();
         $stmt->bind_result($id, $name, $detail);
         while ($stmt->fetch()) {
             array_push($result, array(
-                " <input type='radio' class='form-control' value=" . $id . " name='lesson_id' />",
+                " <input type='radio' class='form-control' value=" . $id . " name='lesson-id' />",
                 $name,
                 $detail,
                 "<input type='hidden' name='lesson_sec_name_" . $id . "' value='" . $name . "' />"
@@ -287,14 +287,15 @@ class fetcher
     public function fetch_admin_user_list()
     {
         $result = array();
-        $stmt = $this->mysql_connection->prepare("SELECT users.user_id, user_detail.name, " .
-            "FROM users JOIN user_detail ON users.user_id = user_detail.user_id");
+        $stmt = $this->mysql_connection->prepare("SELECT users.user_id, user_detail.name, user_group.group_name " .
+            "FROM users JOIN user_detail ON users.user_id = user_detail.user_id " .
+            "JOIN user_group ON users.group_id = user_group.group_id");
         $stmt->execute();
-        $stmt->bind_result($id, $role, $name, $score);
+        $stmt->bind_result($id, $name, $group);
         while ($stmt->fetch()) {
             array_push($result, array(
                 "<input type='radio' name='user_id' value='" . $id . "'>",
-                $name, $score, $role
+                $name, $group
             ));
         }
         $stmt->close();
@@ -402,8 +403,8 @@ class fetcher
             "JOIN user_group ON examination.user_group = user_group.group_id");
         $stmt->execute();
         $stmt->bind_result($exam_name, $exam_owner, $exam_group, $exam_id);
-        $check_id = "<input class='form-control' type='radio' name='exam_id' value='" . strval($exam_id) . "' />";
         while ($stmt->fetch()) {
+            $check_id = "<input class='form-control' type='radio' name='exam_id' value='".$exam_id."' />";
             array_push($result, array(
                 $check_id,
                 $exam_name,
@@ -413,6 +414,28 @@ class fetcher
         }
         $stmt->close();
         return json_encode(array("data" => $result));
+    }
+
+    public function fetch_exam_lesson()
+    {
+        $result = array();
+        $stmt = $this->mysql_connection->prepare("SELECT lesson_id, lesson_name, lesson_detail " .
+            "FROM lesson WHERE is_exam = 'YES'");
+        $stmt->execute();
+        $stmt->bind_result($id, $name, $detail);
+        while ($stmt->fetch()) {
+            array_push(
+                $result,
+                array($name, $detail, "<button class='btn btn-danger'>Hell gate is open!</button>")
+            );
+        }
+        $stmt->close();
+        return json_encode(array("data" => $result));
+    }
+
+    public function fetch_exam_exercise()
+    {
+
     }
 
     public function __destruct()

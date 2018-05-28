@@ -31,6 +31,7 @@ CREATE TABLE `examination` (
   `user_group` int(6) unsigned zerofill NOT NULL,
   `exam_time` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `exam_status` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'SCHEDULED',
+  `exam_lesson` int(6) unsigned zerofill NOT NULL,
   PRIMARY KEY (`exam_id`),
   KEY `owner_idx` (`exam_owner`),
   KEY `user_g` (`user_group`),
@@ -45,7 +46,7 @@ CREATE TABLE `examination` (
 
 LOCK TABLES `examination` WRITE;
 /*!40000 ALTER TABLE `examination` DISABLE KEYS */;
-INSERT INTO `examination` VALUES (000001,'test',0000000000001,000001,'16/05/2018 12:00 AM - 16/05/2018 11:59 PM','ON PROCESS');
+INSERT INTO `examination` VALUES (000001,'FINAL EXAM JA',0000000000001,000001,'28/05/2018 12:13:21 pm','PROCESSING',000007);
 /*!40000 ALTER TABLE `examination` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -70,7 +71,7 @@ CREATE TABLE `exercise` (
   PRIMARY KEY (`exercise_id`),
   KEY `lesson_idx` (`lesson_id`),
   CONSTRAINT `lesson` FOREIGN KEY (`lesson_id`) REFERENCES `lesson` (`lesson_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -79,7 +80,7 @@ CREATE TABLE `exercise` (
 
 LOCK TABLES `exercise` WRITE;
 /*!40000 ALTER TABLE `exercise` DISABLE KEYS */;
-INSERT INTO `exercise` VALUES (000003,000004,'teset33','<p>ttt<br></p>','4','4','<p>ttt<br></p>',5,'ACTIVATED',0),(000004,000004,'test12','<p>test<br></p>','4','4','<p>test<br></p>',5,'HIDDEN',0),(000005,000004,'testja','<p>testja<br></p><p><br></p><p></p>','4','4','<p>testja<br></p><p><br></p><p></p>',5,'HIDDEN',0);
+INSERT INTO `exercise` VALUES (000001,000004,'TEST','<p>test ja<br></p>','10','10','<p>test ja<br></p>',5,'ACTIVATED',0);
 /*!40000 ALTER TABLE `exercise` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -131,7 +132,7 @@ CREATE TABLE `exercise_testcase` (
   PRIMARY KEY (`testcase_id`),
   KEY `testcase_idx` (`exercise_id`),
   CONSTRAINT `testcase` FOREIGN KEY (`exercise_id`) REFERENCES `exercise` (`exercise_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -140,7 +141,7 @@ CREATE TABLE `exercise_testcase` (
 
 LOCK TABLES `exercise_testcase` WRITE;
 /*!40000 ALTER TABLE `exercise_testcase` DISABLE KEYS */;
-INSERT INTO `exercise_testcase` VALUES (000015,000003,100,'test1','test1'),(000016,000003,100,'test2','test2'),(000024,000004,100,'test1','test1'),(000025,000004,100,'test2','test2'),(000032,000005,100,'test1','test1'),(000033,000005,100,'test2','test2');
+INSERT INTO `exercise_testcase` VALUES (000001,000001,100,'test1','test1'),(000002,000001,100,'test2','test2');
 /*!40000 ALTER TABLE `exercise_testcase` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -156,9 +157,9 @@ CREATE TABLE `lesson` (
   `owner_id` int(13) unsigned zerofill NOT NULL,
   `lesson_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `lesson_detail` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'DISPLAYED',
+  `is_exam` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NO',
   PRIMARY KEY (`lesson_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -167,7 +168,7 @@ CREATE TABLE `lesson` (
 
 LOCK TABLES `lesson` WRITE;
 /*!40000 ALTER TABLE `lesson` DISABLE KEYS */;
-INSERT INTO `lesson` VALUES (000004,0000000000001,'Problem Solving','GG','DISPLAYED'),(000006,0000000000001,'Python Da Fuq','Python FTW!','DISPLAYED');
+INSERT INTO `lesson` VALUES (000004,0000000000001,'Problem Solving','GG','NO'),(000007,0000000000008,'Test','Test','NO'),(000012,0000000000001,'FINAL EXAM JA','EXAM!','YES');
 /*!40000 ALTER TABLE `lesson` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -218,7 +219,7 @@ CREATE TABLE `user_detail` (
 
 LOCK TABLES `user_detail` WRITE;
 /*!40000 ALTER TABLE `user_detail` DISABLE KEYS */;
-INSERT INTO `user_detail` VALUES (0000000000001,'Panupong'),(0000000000002,'Panupong Prueksa'),(0000000000006,'kakjung'),(0000000000007,'ppap');
+INSERT INTO `user_detail` VALUES (0000000000001,'Panupong'),(0000000000002,'Panupong Prueksa'),(0000000000006,'kakjung'),(0000000000007,'ppap'),(0000000000008,'Peg');
 /*!40000 ALTER TABLE `user_detail` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -240,7 +241,7 @@ CREATE TABLE `user_enrollment` (
   KEY `lesson_idx` (`lesson_id`),
   CONSTRAINT `enroll` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `lesson_user` FOREIGN KEY (`lesson_id`) REFERENCES `lesson` (`lesson_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -249,7 +250,7 @@ CREATE TABLE `user_enrollment` (
 
 LOCK TABLES `user_enrollment` WRITE;
 /*!40000 ALTER TABLE `user_enrollment` DISABLE KEYS */;
-INSERT INTO `user_enrollment` VALUES (0000006,0000000000002,000004,'2018-05-03 17:17:13','2018-05-03 17:17:13');
+INSERT INTO `user_enrollment` VALUES (0000006,0000000000002,000004,'2018-05-28 16:00:54','2018-05-28 16:00:54');
 /*!40000 ALTER TABLE `user_enrollment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -292,7 +293,7 @@ CREATE TABLE `users` (
   `password` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `group_id` int(6) unsigned zerofill NOT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -301,7 +302,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (0000000000001,'admin','9801cdf8cf0444e39d6e38ef49d82e21',000002),(0000000000002,'phai','9801cdf8cf0444e39d6e38ef49d82e21',000001),(0000000000006,'kkkk','201030a37a20579bb31ccbbe2ddd1c25',000001),(0000000000007,'ppap','7cd233baa367724e7f4b66afbb083a70',000001);
+INSERT INTO `users` VALUES (0000000000001,'admin','9801cdf8cf0444e39d6e38ef49d82e21',000002),(0000000000002,'phai','9801cdf8cf0444e39d6e38ef49d82e21',000001),(0000000000006,'kkkk','201030a37a20579bb31ccbbe2ddd1c25',000001),(0000000000007,'ppap','7cd233baa367724e7f4b66afbb083a70',000001),(0000000000008,'admin2','9801cdf8cf0444e39d6e38ef49d82e21',000002);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -314,4 +315,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-05-16 16:39:49
+-- Dump completed on 2018-05-28 17:37:06

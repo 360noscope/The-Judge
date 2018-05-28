@@ -32,7 +32,12 @@ if ($login_check && $request_check) {
             echo $fetcher->fetch_total_userstats($_SESSION["stu_id"]);
             break;
         case "get_lesson":
-            echo $fetcher->fetch_lesson();
+            $exam_flag = $userer->examination_check($_SESSION["user_group"]);
+            if ($exam_flag == true) {
+                echo $fetcher->fetch_exam_lesson();
+            } else{
+                echo $fetcher->fetch_lesson();
+            }
             break;
         case "get_exercise":
             echo $fetcher->fetch_exercise();
@@ -201,12 +206,16 @@ if ($login_check && $request_check) {
             break;
         case "exam_activate":
             if ($_SESSION["admin_id"] != null) {
-                $lessoner->activate_exam_mode($_SESSION["admin_id"]);
+                $lessoner->activate_exam_mode(
+                    $_SESSION["admin_id"],
+                    $_POST["lesson_name"],
+                    $_POST["user_group"]
+                );
             }
             break;
         case "exam_deactivate":
             if ($_SESSION["admin_id"] != null) {
-                $lessoner->deactivate_exam_mode($_SESSION["admin_id"]);
+                $lessoner->deactivate_exam_mode($_SESSION["admin_id"], $_POST["exam_id"]);
             }
             break;
     }

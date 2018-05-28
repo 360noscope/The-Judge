@@ -7,6 +7,7 @@ if (!isset($_SESSION["admin_id"])) {
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,10 +17,12 @@ if (!isset($_SESSION["admin_id"])) {
         crossorigin="anonymous">
     <link rel="stylesheet" href="css/bsadmin.css">
     <link rel="stylesheet" href="css/common.css">
-    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
+        crossorigin="anonymous">
 </head>
+
 <body>
-<nav class="navbar navbar-expand navbar-dark bg-success">
+    <nav class="navbar navbar-expand navbar-dark bg-success">
         <a class="sidebar-toggle text-light mr-3">
             <i class="fa fa-bars"></i>
         </a>
@@ -31,7 +34,8 @@ if (!isset($_SESSION["admin_id"])) {
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="profile-link" data-toggle="dropdown">
-                        <i class="fa fa-address-card"></i> <?php echo $_SESSION["admin_name"]; ?>
+                        <i class="fa fa-address-card"></i>
+                        <?php echo $_SESSION["admin_name"]; ?>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profile-link">
                         <a class="dropdown-item" href="#">My Profile</a>
@@ -75,7 +79,7 @@ if (!isset($_SESSION["admin_id"])) {
             <div class="row">
                 <div class="col-lg-12">
                     <div class="alert alert-warning" role="alert">
-                    <h4 class="alert-heading">News</h4>
+                        <h4 class="alert-heading">News</h4>
                         Welcome to The Judge!
                     </div>
                 </div>
@@ -90,4 +94,5 @@ if (!isset($_SESSION["admin_id"])) {
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
 </body>
+
 </html>
