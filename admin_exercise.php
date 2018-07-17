@@ -40,7 +40,7 @@ if (!isset($_SESSION["admin_id"])) {
                         <?php echo $_SESSION["admin_name"]; ?>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profile-link">
-                        <a class="dropdown-item" href="#">My Profile</a>
+                        <!--<a class="dropdown-item" href="#">My Profile</a>-->
                         <a class="dropdown-item" href="func/logout.php">Logout</a>
                     </div>
                 </li>
@@ -63,14 +63,14 @@ if (!isset($_SESSION["admin_id"])) {
                     <a href="admin_exercise.php">
                         <i class="fas fa-code"></i> Exercise Management</a>
                 </li>
-                <li>
+                <!--<li>
                     <a href="admin_pair.php">
                         <i class="far fa-handshake"></i> Pair Programming</a>
                 </li>
                 <li>
                     <a href="admin_exam.php">
                         <i class="fab fa-accessible-icon"></i> Examination Mode</a>
-                </li>
+                </li>-->
                 <li>
                     <a href="admin_user.php">
                         <i class="fas fa-graduation-cap"></i> User Management</a>

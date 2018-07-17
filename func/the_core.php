@@ -32,12 +32,12 @@ if ($login_check && $request_check) {
             echo $fetcher->fetch_total_userstats($_SESSION["stu_id"]);
             break;
         case "get_lesson":
-            $exam_flag = $userer->examination_check($_SESSION["user_group"]);
-            if ($exam_flag == true) {
+            echo $fetcher->fetch_lesson();
+            //$exam_flag = $userer->examination_check($_SESSION["user_group"]);
+            /*if ($exam_flag == true) {
                 echo $fetcher->fetch_exam_lesson();
-            } else{
-                echo $fetcher->fetch_lesson();
-            }
+            } else{    
+            }*/
             break;
         case "get_exercise":
             echo $fetcher->fetch_exercise();
