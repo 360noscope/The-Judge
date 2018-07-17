@@ -1,0 +1,19 @@
+{
+    "remotePath": "/",
+    "host": "pnru1.com",
+    "username": "Amarita@pnru1.com",
+    "password": "Amarita.r",
+    "port": 21,
+    "secure": false,
+    "protocol": "ftp",
+    "uploadOnSave": true,
+    "passive": false,
+    "debug": false,
+    "privateKeyPath": null,
+    "passphrase": null,
+    "ignore": [
+        "\\.vscode",
+        "\\.git",
+        "\\.DS_Store"
+    ]
+}
