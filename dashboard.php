@@ -18,7 +18,7 @@ if (!isset($_SESSION["stu_id"])) {
     <link rel="stylesheet" href="css/common.css">
 </head>
 
-<body>
+<body onload="get_userstats();">
     <nav class="navbar navbar-expand navbar-dark bg-success">
         <a class="sidebar-toggle text-light mr-3">
             <i class="fa fa-bars"></i>
@@ -117,6 +117,8 @@ if (!isset($_SESSION["stu_id"])) {
 			  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
 			  crossorigin="anonymous"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
     <script src="js/bsadmin.js"></script>
     <script src="js/common.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"

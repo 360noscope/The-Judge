@@ -270,6 +270,19 @@ class Judge
         return $server_output;
     }
 
+    private function updatingUserScore($score){
+        $error;
+        try{
+            $stmt = $this->mysql_connection->prepare("UPDATE user_detail SET score + ? WHERE user_id =?");
+            $stmt->bind_param("is", $score, $this->user_id);
+            $stmt->execute();
+            $stmt->close();
+        }catch(Exception $ex){
+            $error = $ex;
+        }
+        return $error;
+    }
+
     private function recordSession($case_result, $total_case)
     {
         $passed_counter = 0;
@@ -319,19 +332,20 @@ class Judge
                 $stmt->bind_param("ssssss", $this->user_id, $this->exercise_id, $passed_counter, $datty, $date_str, $total_score);
             }
             $stmt->execute();
-            $stmt->close();
+            $stmt->close();       
         } else {
             $stmt = $this->mysql_connection->prepare("UPDATE exercise_session SET " .
                 "try_date=?, complete_date=?, passed_case=?, total_score=? WHERE exercise_id = ? AND user_id = ?");
             if ($passed_counter === ($total_case - 1)) {
                 $stmt->bind_param("ssssss", $date_str, $date_str, $passed_counter, $completed_total_score, $this->exercise_id, $this->user_id);
             } else {
-                $test = $total_score;
+                //$test = $total_score;
                 $datty = "-";
                 $stmt->bind_param("ssssss", $date_str, $datty, $passed_counter, $total_score, $this->exercise_id, $this->user_id);
             }
             $stmt->execute();
             $stmt->close();
+            //$this->updatingUserScore($completed_score);
         }
         $this->mysql_connection->close();
     }

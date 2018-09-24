@@ -33,11 +33,6 @@ if ($login_check && $request_check) {
             break;
         case "get_lesson":
             echo $fetcher->fetch_lesson();
-            //$exam_flag = $userer->examination_check($_SESSION["user_group"]);
-            /*if ($exam_flag == true) {
-                echo $fetcher->fetch_exam_lesson();
-            } else{    
-            }*/
             break;
         case "get_exercise":
             echo $fetcher->fetch_exercise();
@@ -194,36 +189,12 @@ if ($login_check && $request_check) {
                 $userer->delete_user($_POST["user_id"]);
             }
             break;
-        case "fetch_user_group":
-            if ($_SESSION["admin_id"] != null) {
-                echo $fetcher->fetch_user_group();
-            }
-            break;
-        case "fetch_examination":
-            if ($_SESSION["admin_id"] != null) {
-                echo $fetcher->fetch_examination();
-            }
-            break;
-        case "exam_activate":
-            if ($_SESSION["admin_id"] != null) {
-                $lessoner->activate_exam_mode(
-                    $_SESSION["admin_id"],
-                    $_POST["lesson_name"],
-                    $_POST["user_group"]
-                );
-            }
-            break;
-        case "exam_deactivate":
-            if ($_SESSION["admin_id"] != null) {
-                $lessoner->deactivate_exam_mode($_SESSION["admin_id"], $_POST["exam_id"]);
-            }
-            break;
     }
 } else if (isset($_POST["username"]) && isset($_POST["password"])) {
     $authener = new Authentication();
     $result = $authener->login($_POST["username"], $_POST["password"]);
     if ($result[0]["flag"] == "ok") {
-        if ($result[0]["type"] === "TEACHER") {
+        if ($result[0]["type"] == "ADMIN") {
             header("Location: /admin.php");
             die();
         } else {

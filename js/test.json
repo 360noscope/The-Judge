@@ -1,13 +1,13 @@
 {
     "test_case": [
         {
-            "input": "test1",
-            "output": "test1",
+            "input": "test",
+            "output": "test",
             "score": "100"
         },
         {
-            "input": "test2",
-            "output": "test2",
+            "input": "test",
+            "output": "test",
             "score": "100"
         }
     ]

@@ -52,8 +52,7 @@ class User
         return $result;
     }
 
-    public function delete_user($user_id)
-    {
+    public function delete_user($user_id){
         $stmt = $this->mysql_connection->prepare("DELETE FROM users WHERE user_id = ?");
         $stmt->bind_param("s", $user_id);
         $stmt->execute();
@@ -68,13 +67,13 @@ class User
         $stmt->close();
     }
 
-    private function isUserExists($user, $isUpdate, $user_id = 0)
+    private function isUserExists($user, $isUpdate, $user_id=0)
     {
         $result = false;
         if ($isUpdate == true) {
             $stmt = $this->mysql_connection->prepare("SELECT username FROM users WHERE username = ? AND user_id != ?");
             $stmt->bind_param("ss", $user, $user_id);
-        } else {
+        }else{
             $stmt = $connection->prepare("SELECT username FROM users WHERE username = ?");
             $stmt->bind_param("s", $user);
         }
@@ -94,26 +93,6 @@ class User
         $stmt->bind_param("is", intval($user_id), $data["name"]);
         $stmt->execute();
         $stmt->close();
-    }
-
-    public function examination_check($user_group)
-    {
-        $result = false;
-        $stmt = $this->mysql_connection->prepare("SELECT COUNT(*) FROM examination WHERE user_group = ?");
-        $stmt->bind_param("s", $user_group);
-        $stmt->execute();
-        $stmt->bind_result($exam_count);
-        while ($stmt->fetch()) {
-            if ($exam_count > 0) {
-                $result = true;
-            }
-        }
-        return $result;
-    }
-
-    public function __destruct()
-    {
-        $this->mysql_connection->close();
     }
 }
 ?>

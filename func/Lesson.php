@@ -60,50 +60,5 @@ class Lesson
         $stmt->close();
         return "Done deleting lesson!";
     }
-
-    public function activate_exam_mode($owner_id, $lesson_name, $user_group)
-    {
-        $today = $date = date('d/m/Y h:i:s a');
-        $exam_status = "PROCESSING";
-        $stmt = $this->mysql_connection->prepare("INSERT INTO examination (exam_name, " .
-            "exam_owner, user_group, exam_time, exam_status) VALUES(?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssss", $lesson_name, $owner_id, $user_group, $today, $exam_status);
-        $stmt->execute();
-        $stmt->close();
-
-        $stmt = $this->mysql_connection->prepare("INSERT INTO lesson (owner_id, lesson_name, ".
-        "lesson_detail, is_exam) VALUES(?, ?, 'EXAM!', 'YES')");
-        $stmt->bind_param("ss", $owner_id, $lesson_name);
-        $stmt->execute();
-        $stmt->close();
-    }
-
-    public function deactivate_exam_mode($owner_id, $exam_id)
-    {
-        $lesson_id = "";
-        $stmt = $this->mysql_connection->prepare("SELECT exam_lesson FROM examination WHERE exam_id = ?");
-        $stmt->bind_param("s", $exam_id);
-        $stmt->execute();
-        $stmt->bind_result($id);
-        while($stmt->fetch()){
-            $lesson_id = $id;
-        }
-        $stmt->close();
-
-        $stmt = $this->mysql_connection->prepare("DELETE FROM examination WHERE owner_id = ? AND exam_id = ?");
-        $stmt->bind_param("ss", $owner_id, $exam_id);
-        $stmt->execute();
-        $stmt->close();
-
-        $stmt = $this->mysql_connection->prepare("DELETE FROM lesson WHERE owner_id = ? AND lesson_id = ?");
-        $stmt->bind_param("ss", $owner_id, $lesson_id);
-        $stmt->execute();
-        $stmt->close();
-    }
-
-    public function __destruct()
-    {
-        $this->mysql_connection->close();
-    }
 }
 ?>

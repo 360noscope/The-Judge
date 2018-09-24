@@ -21,8 +21,8 @@ if (!isset($_SESSION["stu_id"])) {
         crossorigin="anonymous">
     <link rel="stylesheet" href="css/bsadmin.css">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
-        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 </head>
 
 <body>
@@ -134,14 +134,13 @@ if (!isset($_SESSION["stu_id"])) {
             </div>
         </div>
     </div>
-    <div class="modal fade bd-example-modal-lg" id="loading_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
+    <div class="modal fade bd-example-modal-lg" id="loading_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="lds-css ng-scope">
+                            <div class="lds-css ng-scope" >
                                 <div class="lds-pacman">
                                     <div>
                                         <div></div>
@@ -156,7 +155,7 @@ if (!isset($_SESSION["stu_id"])) {
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <img src="/img/loading.gif" alt="Loading" title="Loading" />
+                                <img src="/img/loading.gif" alt="Loading" title="Loading" />
                         </div>
                     </div>
                 </div>
@@ -166,6 +165,8 @@ if (!isset($_SESSION["stu_id"])) {
         anonymous "></script>
             <script src="js/bsadmin.js"></script>
             <script src="js/common.js"></script>
+            <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+            <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q "
                 crossorigin="anonymous "></script>
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl "

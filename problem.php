@@ -15,9 +15,8 @@ if(!isset($_SESSION["stu_id"])){
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
         crossorigin="anonymous">
     <link rel="stylesheet" href="css/bsadmin.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
-        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
        
 </head>
 <body>
@@ -69,7 +68,7 @@ if(!isset($_SESSION["stu_id"])){
             <h1>The Judge Exercise</h1>
             <form method="post" action="func/the_core.php">
                 <input name="action" type="hidden" value="get_exercise_detail" />
-                <table id="exercise" class="table table-striped table-borderless table-sm dt-responsive" style="width:100%" cellspacing="0">
+                <table id="exercise" class="display" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>Problem Name</th>

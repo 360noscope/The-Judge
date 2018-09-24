@@ -31,7 +31,9 @@ class fetcher
             }
         }
         $stmt->close();
+        $this->mysql_connection->close();
 
+        $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
         $stmt = $this->mysql_connection->prepare("SELECT exercise_name, exercise_detail, difficulty, hint, exec_time, exec_memory, completed_score FROM exercise WHERE " .
             "exercise_id = ?");
         $stmt->bind_param("s", $id);
@@ -49,6 +51,7 @@ class fetcher
             ));
         }
         $stmt->close();
+        $this->mysql_connection->close();
         $_SESSION["selected_exercise"] = $id;
         $_SESSION["mem_limit"] = $memory;
         $_SESSION["time_limit"] = $exectime;
@@ -61,8 +64,7 @@ class fetcher
     {
         $result = array();
         $stmt = $this->mysql_connection->prepare("SELECT @les_id := lesson_id, lesson_name, lesson_detail, " .
-            "(SELECT COUNT(*) FROM user_enrollment WHERE user_id = ? AND lesson_id = @les_id) FROM lesson " .
-            "WHERE is_exam = 'NO'");
+            "(SELECT COUNT(*) FROM user_enrollment WHERE user_id = ? AND lesson_id = @les_id) FROM lesson");
         $stmt->bind_param("s", $_SESSION["stu_id"]);
         $stmt->execute();
         $stmt->bind_result($id, $name, $detail, $enrolled);
@@ -81,6 +83,7 @@ class fetcher
             );
         }
         $stmt->close();
+        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
@@ -90,7 +93,7 @@ class fetcher
         $stmt = $this->mysql_connection->prepare("SELECT exercise.exercise_id, exercise.exercise_name, " .
             "exercise.difficulty, lesson.lesson_name FROM exercise JOIN user_enrollment ON exercise.lesson_id = user_enrollment.lesson_id " .
             "JOIN lesson ON exercise.lesson_id = lesson.lesson_id " .
-            "WHERE user_enrollment.user_id = ? AND exercise.exercise_status != 'HIDDEN'");
+            "WHERE user_enrollment.user_id = ? AND exercise.exercise_status = 'ACTIVATED'");
         $stmt->bind_param("s", $_SESSION["stu_id"]);
         $stmt->execute();
         $stmt->bind_result($id, $name, $difficulty, $lesson_name);
@@ -139,6 +142,7 @@ class fetcher
             array_push($result, array($name, $lesson_name, $star, "<button type='submit' class='btn btn-danger' name='exercise_id' value='" . $id . "'>Go!</button>"));
         }
         $stmt->close();
+        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
@@ -160,25 +164,27 @@ class fetcher
             array_push($result, array($exercise_name, $percentage, $completed_date, $try_date));
         }
         $stmt->close();
+        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
     public function fetch_admin_lesson($admin_id)
     {
         $result = array();
-        $stmt = $this->mysql_connection->prepare("SELECT lesson_id, lesson_name, lesson_detail FROM lesson WHERE owner_id = ? AND is_exam = 'NO'");
+        $stmt = $this->mysql_connection->prepare("SELECT lesson_id, lesson_name, lesson_detail FROM lesson WHERE owner_id = ?");
         $stmt->bind_param("s", $admin_id);
         $stmt->execute();
         $stmt->bind_result($id, $name, $detail);
         while ($stmt->fetch()) {
             array_push($result, array(
-                " <input type='radio' class='form-control' value=" . $id . " name='lesson-id' />",
+                " <input type='radio' class='form-control' value=" . $id . " name='lesson_id'>",
                 $name,
                 $detail,
                 "<input type='hidden' name='lesson_sec_name_" . $id . "' value='" . $name . "' />"
             ));
         }
         $stmt->close();
+        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
@@ -196,6 +202,7 @@ class fetcher
             ));
         }
         $stmt->close();
+        $this->mysql_connection->close();
         return json_encode($result);
     }
 
@@ -220,6 +227,7 @@ class fetcher
             ));
         }
         $stmt->close();
+        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
@@ -248,6 +256,7 @@ class fetcher
             );
         }
         $stmt->close();
+        $this->mysql_connection->close();
         return json_encode(array("exercise_data" => $result, "testcase_data" => $this->fetch_exercise_testcase($exercise_id)));
     }
 
@@ -267,6 +276,7 @@ class fetcher
             ));
         }
         $stmt->close();
+        $this->mysql_connection->close();
         return $result;
     }
 
@@ -281,24 +291,25 @@ class fetcher
             $result = $name;
         }
         $stmt->close();
+        $this->mysql_connection->close();
         return $result;
     }
 
     public function fetch_admin_user_list()
     {
         $result = array();
-        $stmt = $this->mysql_connection->prepare("SELECT users.user_id, user_detail.name, user_group.group_name " .
-            "FROM users JOIN user_detail ON users.user_id = user_detail.user_id " .
-            "JOIN user_group ON users.group_id = user_group.group_id");
+        $stmt = $this->mysql_connection->prepare("SELECT users.user_id, users.role, user_detail.name, user_detail.score " .
+            "FROM users JOIN user_detail ON users.user_id = user_detail.user_id");
         $stmt->execute();
-        $stmt->bind_result($id, $name, $group);
+        $stmt->bind_result($id, $role, $name, $score);
         while ($stmt->fetch()) {
             array_push($result, array(
                 "<input type='radio' name='user_id' value='" . $id . "'>",
-                $name, $group
+                $name, $score, $role
             ));
         }
         $stmt->close();
+        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
@@ -315,6 +326,7 @@ class fetcher
             $result = array("username" => $username, "name" => $name, "role" => $role);
         }
         $stmt->close();
+        $this->mysql_connection->close();
         return json_encode($result);
     }
 
@@ -330,9 +342,11 @@ class fetcher
             $total_score += intval($score);
         }
         $stmt->close();
+        $this->mysql_connection->close();
 
         //Get user remaining exercise to do
         $remaining_exercise = 0;
+        $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
         $stmt = $this->mysql_connection->prepare("SELECT COUNT(*) FROM exercise " .
             "LEFT JOIN exercise_session ON exercise.exercise_id = exercise_session.exercise_id " .
             "WHERE exercise_session.complete_date = '-' AND exercise_session.user_id = ?");
@@ -343,19 +357,23 @@ class fetcher
             $remaining_exercise = intval($exercise_count);
         }
         $stmt->close();
+        $this->mysql_connection->close();
 
         //Get total user
         $total_user = 0;
+        $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
         $stmt = $this->mysql_connection->prepare("SELECT COUNT(*) FROM users");
         $stmt->execute();
         $stmt->bind_result($count);
-        while ($stmt->fetch()) {
+        while($stmt->fetch()){
             $total_user = $count;
         }
         $stmt->close();
+        $this->mysql_connection->close();
 
         //Get user rank
         $ranking = 0;
+        $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
         $stmt = $this->mysql_connection->prepare("SELECT  @curRank := @curRank + 1 AS rank, user_id AS userid " .
             "FROM users p, (SELECT @curRank := 0) s " .
             "ORDER BY CAST(ifnull((SELECT sum(total_score) FROM exercise_session WHERE user_id = userid), 0) " .
@@ -368,79 +386,14 @@ class fetcher
             }
         }
         $stmt->close();
+        $this->mysql_connection->close();
 
         return json_encode(array(
             "total_score" => $total_score,
             "left_exercise" => $remaining_exercise,
-            "total_user" => $total_user,
+            "total_user"=>$total_user,
             "ranking" => $ranking
         ));
-    }
-
-    public function fetch_user_group()
-    {
-        $result = array();
-        $stmt = $this->mysql_connection->prepare("SELECT group_id, group_name, group_description FROM user_group");
-        $stmt->execute();
-        $stmt->bind_result($group_id, $group_name, $group_description);
-        while ($stmt->fetch()) {
-            array_push($result, array(
-                "group_id" => $group_id,
-                "group_name" => $group_name,
-                "group_des" => $group_description
-            ));
-        }
-        $stmt->close();
-        return json_encode($result);
-    }
-
-    public function fetch_examination()
-    {
-        $result = array();
-        $stmt = $this->mysql_connection->prepare("SELECT examination.exam_name, user_detail.name, " .
-            "user_group.group_name, examination.exam_id FROM examination " .
-            "JOIN user_detail ON examination.exam_owner = user_detail.user_id " .
-            "JOIN user_group ON examination.user_group = user_group.group_id");
-        $stmt->execute();
-        $stmt->bind_result($exam_name, $exam_owner, $exam_group, $exam_id);
-        while ($stmt->fetch()) {
-            $check_id = "<input class='form-control' type='radio' name='exam_id' value='".$exam_id."' />";
-            array_push($result, array(
-                $check_id,
-                $exam_name,
-                $exam_owner,
-                $exam_group
-            ));
-        }
-        $stmt->close();
-        return json_encode(array("data" => $result));
-    }
-
-    public function fetch_exam_lesson()
-    {
-        $result = array();
-        $stmt = $this->mysql_connection->prepare("SELECT lesson_id, lesson_name, lesson_detail " .
-            "FROM lesson WHERE is_exam = 'YES'");
-        $stmt->execute();
-        $stmt->bind_result($id, $name, $detail);
-        while ($stmt->fetch()) {
-            array_push(
-                $result,
-                array($name, $detail, "<button class='btn btn-danger'>Hell gate is open!</button>")
-            );
-        }
-        $stmt->close();
-        return json_encode(array("data" => $result));
-    }
-
-    public function fetch_exam_exercise()
-    {
-
-    }
-
-    public function __destruct()
-    {
-        $this->mysql_connection->close();
     }
 }
 ?>
