@@ -15,6 +15,7 @@ if (!isset($_SESSION["admin_id"])) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
         crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
         crossorigin="anonymous">
     <link rel="stylesheet" href="css/bsadmin.css">
@@ -103,7 +104,7 @@ if (!isset($_SESSION["admin_id"])) {
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form method="POST">
+                <form id="addExerciseForm" method="POST">
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md">
@@ -177,7 +178,7 @@ if (!isset($_SESSION["admin_id"])) {
                         <br />
                         <div class="row">
                             <div class="col-lg">
-                                <table class="table">
+                                <table class="table" id="addTestCaseList">
                                     <thead class="text-center">
                                         <tr>
                                             <th>Input</th>
@@ -185,7 +186,7 @@ if (!isset($_SESSION["admin_id"])) {
                                             <th>Score</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="addTestCaseList">
+                                    <tbody>
                                     </tbody>
                                 </table>
                             </div>
@@ -307,8 +308,8 @@ if (!isset($_SESSION["admin_id"])) {
             </div>
         </div>
     </div>
-    <div class="modal fade" id="actExerciseLessonModal" tabindex="-1" role="dialog"
-        aria-labelledby="del_exercise_lesson_label" aria-hidden="true">
+    <div class="modal fade" id="actExerciseLessonModal" tabindex="-1" role="dialog" aria-labelledby="del_exercise_lesson_label"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -375,8 +376,8 @@ if (!isset($_SESSION["admin_id"])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote-bs4.js"></script>
     <script src="js/bsadmin.js"></script>
     <script src="js/admin_exercise.js"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
         crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"

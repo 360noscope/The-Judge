@@ -85,7 +85,7 @@ class Fetcher
         return json_encode(array("data" => $result));
     }
 
-    public function fetch_exercise()
+    public function fetchExercise()
     {
         $result = array();
         $stmt = $this->mysql_connection->prepare("SELECT exercise.exercise_id, exercise.exercise_name, " .
@@ -137,7 +137,7 @@ class Fetcher
                 "<span class='fa fa-star' style='color: " . $rate4 . ";'></span>" .
                 "<span class='fa fa-star' style='color: " . $rate5 . ";'></span>" .
                 "</div></div></div>";
-            array_push($result, array($name, $lesson_name, $star, "<button type='submit' class='btn btn-danger' name='exercise_id' value='" . $id . "'>Go!</button>"));
+            array_push($result, array($name, $lesson_name, $star));
         }
         $stmt->close();
         return json_encode(array("data" => $result));
@@ -182,24 +182,7 @@ class Fetcher
         return json_encode(array("data" => $result));
     }
 
-    public function get_admin_lesson_list($admin_id)
-    {
-        $result = array();
-        $stmt = $this->mysql_connection->prepare("SELECT lesson_id, lesson_name FROM lesson WHERE owner_id = ?");
-        $stmt->bind_param("s", $admin_id);
-        $stmt->execute();
-        $stmt->bind_result($id, $name);
-        while ($stmt->fetch()) {
-            array_push($result, array(
-                $id,
-                $name,
-            ));
-        }
-        $stmt->close();
-        return json_encode($result);
-    }
-
-    public function fetch_admin_exercise()
+    public function fetchAdminExercise()
     {
         $result = array();
         $stmt = $this->mysql_connection->prepare("SELECT @prob_id := exercise.exercise_id, exercise.exercise_name, " .
@@ -214,9 +197,7 @@ class Fetcher
                 $exercise_status_text = "Displayed";
                 $exercise_status_class = "badge badge-success";
             }
-            array_push($result, array(
-                "<input type='radio' name='exercise_id' value='" . $id . "'>",
-                $name, $lesson, $case_count, "<h5 class='text-center'><span class='" . $exercise_status_class . "'>" . $exercise_status_text . "</span></h5>"
+            array_push($result, array($id, $name, $lesson, $case_count, "<h5 class='text-center'><span class='" . $exercise_status_class . "'>" . $exercise_status_text . "</span></h5>"
             ));
         }
         $stmt->close();

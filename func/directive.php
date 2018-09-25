@@ -36,6 +36,10 @@ switch ($_POST["action"]) {
         $lesson->deleteLesson($_POST["id"]);
         break;
     case "ListAdminExercise":
+        echo $fetch->fetchExercise();
+        break;
+    case "addAdminExercise":
+
         break;
 
 }
