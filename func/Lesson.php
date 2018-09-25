@@ -33,7 +33,7 @@ class Lesson
         return "Done unenroll you!";
     }
 
-    public function add_lesson($lesson_name, $lesson_detail, $admin_id)
+    public function addLesson($lesson_name, $lesson_detail, $admin_id)
     {
         $stmt = $this->mysql_connection->prepare("INSERT INTO lesson (lesson_name, lesson_detail, owner_id) VALUES(?, ?, ?)");
         $stmt->bind_param("sss", $lesson_name, $lesson_detail, $admin_id);
@@ -42,7 +42,7 @@ class Lesson
         return "Done add lesson!";
     }
 
-    public function edit_lesson($lesson_id, $lesson_name, $lesson_detail)
+    public function editLesson($lesson_id, $lesson_name, $lesson_detail)
     {
         $stmt = $this->mysql_connection->prepare("UPDATE lesson SET lesson_name=?, lesson_detail=? WHERE lesson_id=?");
         $stmt->bind_param("sss", $lesson_name, $lesson_detail, $lesson_id);
@@ -51,14 +51,30 @@ class Lesson
         return "Done edit lesson!";
     }
 
-    public function delete_lesson($lesson_id)
+    public function deleteLesson($lesson_id)
     {
         $problem_list = array();
         $stmt = $this->mysql_connection->prepare("DELETE FROM lesson WHERE lesson_id = ?");
         $stmt->bind_param("s", $lesson_id);
         $stmt->execute();
         $stmt->close();
+        $this->orderID();
         return "Done deleting lesson!";
+    }
+
+    private function orderID(){
+        try {
+            $stmt = $this->mysql_connection->prepare("ALTER TABLE lesson AUTO_INCREMENT = 1");
+            $stmt->execute();
+            $stmt->close();
+        } catch (Exception $ex) {
+            return $ex;
+        }
+    }
+
+    public function __destruct()
+    {
+        $this->mysql_connection->close();
     }
 }
 ?>

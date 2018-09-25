@@ -195,10 +195,10 @@ if ($login_check && $request_check) {
     $result = $authener->login($_POST["username"], $_POST["password"]);
     if ($result[0]["flag"] == "ok") {
         if ($result[0]["type"] == "ADMIN") {
-            header("Location: /admin.php");
+            header("Location: /the_judge/admin.php");
             die();
         } else {
-            header("Location: /dashboard.php");
+            header("Location: /the_judge/dashboard.php");
             die();
         }
     } else {

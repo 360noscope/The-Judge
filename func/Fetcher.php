@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 include_once("config.php");
-class fetcher
+class Fetcher
 {
     var $mysql_connection, $db_server, $db_username, $db_password, $db;
     public function __construct()
@@ -31,7 +31,6 @@ class fetcher
             }
         }
         $stmt->close();
-        $this->mysql_connection->close();
 
         $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
         $stmt = $this->mysql_connection->prepare("SELECT exercise_name, exercise_detail, difficulty, hint, exec_time, exec_memory, completed_score FROM exercise WHERE " .
@@ -83,7 +82,6 @@ class fetcher
             );
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
@@ -142,7 +140,6 @@ class fetcher
             array_push($result, array($name, $lesson_name, $star, "<button type='submit' class='btn btn-danger' name='exercise_id' value='" . $id . "'>Go!</button>"));
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
@@ -164,11 +161,10 @@ class fetcher
             array_push($result, array($exercise_name, $percentage, $completed_date, $try_date));
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
-    public function fetch_admin_lesson($admin_id)
+    public function fetchAdminLesson($admin_id)
     {
         $result = array();
         $stmt = $this->mysql_connection->prepare("SELECT lesson_id, lesson_name, lesson_detail FROM lesson WHERE owner_id = ?");
@@ -177,14 +173,12 @@ class fetcher
         $stmt->bind_result($id, $name, $detail);
         while ($stmt->fetch()) {
             array_push($result, array(
-                " <input type='radio' class='form-control' value=" . $id . " name='lesson_id'>",
+                $id,
                 $name,
-                $detail,
-                "<input type='hidden' name='lesson_sec_name_" . $id . "' value='" . $name . "' />"
+                $detail
             ));
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
@@ -202,7 +196,6 @@ class fetcher
             ));
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode($result);
     }
 
@@ -227,7 +220,6 @@ class fetcher
             ));
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
@@ -256,7 +248,6 @@ class fetcher
             );
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode(array("exercise_data" => $result, "testcase_data" => $this->fetch_exercise_testcase($exercise_id)));
     }
 
@@ -276,7 +267,6 @@ class fetcher
             ));
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return $result;
     }
 
@@ -291,7 +281,6 @@ class fetcher
             $result = $name;
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return $result;
     }
 
@@ -309,7 +298,6 @@ class fetcher
             ));
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode(array("data" => $result));
     }
 
@@ -326,7 +314,6 @@ class fetcher
             $result = array("username" => $username, "name" => $name, "role" => $role);
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return json_encode($result);
     }
 
@@ -369,7 +356,6 @@ class fetcher
             $total_user = $count;
         }
         $stmt->close();
-        $this->mysql_connection->close();
 
         //Get user rank
         $ranking = 0;
@@ -394,6 +380,11 @@ class fetcher
             "total_user"=>$total_user,
             "ranking" => $ranking
         ));
+    }
+
+    public function __destruct()
+    {
+        $this->mysql_connection->close();
     }
 }
 ?>

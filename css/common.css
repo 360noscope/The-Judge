@@ -155,3 +155,7 @@
     -webkit-transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
     transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
   }
+
+  div.toolbar_lesson{
+    margin-bottom: 20px;
+  }

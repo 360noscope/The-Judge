@@ -1,7 +1,7 @@
 <?php 
 //DB Config
 $mysql_server = "localhost";
-$username = "root";
+$username = "phai";
 $password = "P@ssw0rd";
 $database = "the_judge";
 
@@ -12,15 +12,15 @@ $length = 32;
 $algor = "sha256";
 
 //FTP Config
-$ftp_host = "192.168.43.80";
+$ftp_host = "172.31.22.247";
 $ftp_user = "judge";
-$ftp_pass = "Judge@18th";
+$ftp_pass = "P@ssw0rd";
 $ftp_timeout = 20000;
 $ftp_port = 21;
 $ftp_path = "/python-judge/";
 
 //Sandbox server setting
-$sandbox_ip = "192.168.43.80";
+$sandbox_ip = "172.31.22.247";
 $sandbox_port = 2375;
 
 ?>

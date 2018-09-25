@@ -1,5 +1,0 @@
-FROM alpine:3.6
-
-ENV ALPINE_VERSION=3.6
-
-RUN apk update && apk --update add git python py-pip

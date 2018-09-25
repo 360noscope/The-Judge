@@ -4,22 +4,31 @@ ini_set('display_errors', 1);
 include_once("config.php");
 class Authentication
 {
-    public function login($username, $password)
+    var $mysql_connection;
+
+    public function __construct()
     {
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         global $mysql_server,
             $username,
             $password,
-            $database,
+            $database;
+        $this->mysql_connection = new mysqli($mysql_server, $username, $password, $database);
+        $this->mysql_connection->set_charset("utf8");
+    }
+
+    public function login($username, $password)
+    {
+        global
             $salt,
             $iterations,
             $length,
             $algor;
         $login_result = array();
-        $hashed_password = hash_pbkdf2($algor, $_POST["password"], $salt, $iterations, $length);
-        $connection = new mysqli($mysql_server, $username, $password, "the_judge");
-        $stmt = $connection->prepare("SELECT users.password, users.user_id, user_detail.name, users.role FROM users JOIN user_detail ".
-        "ON users.user_id = user_detail.user_id WHERE users.username = ?");
-        $stmt->bind_param("s", $_POST["username"]);
+        $hashed_password = hash_pbkdf2($algor, $password, $salt, $iterations, $length);
+        $stmt = $this->mysql_connection->prepare("SELECT users.password, users.user_id, user_detail.name, users.role FROM users JOIN user_detail " .
+            "ON users.user_id = user_detail.user_id WHERE users.username = ?");
+        $stmt->bind_param("s", $username);
         $stmt->execute();
         $stmt->bind_result($pass, $id, $name, $role);
         while ($stmt->fetch()) {
@@ -32,17 +41,22 @@ class Authentication
                 $_SESSION["admin_name"] = $name;
                 array_push($login_result, array("type" => "admin", "flag" => "ok"));
             } else {
-                array_push($login_result, array("type" => "none", "flag" => "fail"));
+                array_push($login_result, array("flag" => "fail"));
             }
         }
         $stmt->close();
-        return $login_result;
+        return json_encode($login_result);
     }
 
     public function logout()
     {
         session_start();
         session_destroy();
+    }
+
+    public function __destruct()
+    {
+        $this->mysql_connection->close();
     }
 }
 ?>
