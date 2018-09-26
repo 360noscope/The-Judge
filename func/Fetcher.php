@@ -182,12 +182,13 @@ class Fetcher
         return json_encode(array("data" => $result));
     }
 
-    public function fetchAdminExercise()
+    public function fetchAdminExercise($id)
     {
         $result = array();
         $stmt = $this->mysql_connection->prepare("SELECT @prob_id := exercise.exercise_id, exercise.exercise_name, " .
             "lesson.lesson_name, (SELECT COUNT(*) FROM exercise_testcase WHERE exercise_id = @prob_id), exercise.exercise_status FROM lesson " .
-            "JOIN exercise ON exercise.lesson_id = lesson.lesson_id");
+            "JOIN exercise ON exercise.lesson_id = lesson.lesson_id WHERE lesson.owner_id = ?");
+        $stmt->bind_param("s", $id);
         $stmt->execute();
         $stmt->bind_result($id, $name, $lesson, $case_count, $status);
         while ($stmt->fetch()) {
@@ -197,42 +198,39 @@ class Fetcher
                 $exercise_status_text = "Displayed";
                 $exercise_status_class = "badge badge-success";
             }
-            array_push($result, array($id, $name, $lesson, $case_count, "<h5 class='text-center'><span class='" . $exercise_status_class . "'>" . $exercise_status_text . "</span></h5>"
-            ));
+            array_push($result, array($id, $name, $lesson, $case_count, "<h5 class='text-center'><span class='" . $exercise_status_class . "'>" . $exercise_status_text . "</span></h5>"));
         }
         $stmt->close();
         return json_encode(array("data" => $result));
     }
 
-    public function fetch_admin_exercise_data($exercise_id)
+    public function fetchAdminExerciseData($exercise_id)
     {
         $result = array();
-        $stmt = $this->mysql_connection->prepare("SELECT exercise_name, lesson_id, " .
+        $stmt = $this->mysql_connection->prepare("SELECT lesson_id, " .
             "exercise_detail, exec_time, exec_memory, hint, difficulty " .
             "FROM exercise WHERE exercise_id = ?");
         $stmt->bind_param("s", $exercise_id);
         $stmt->execute();
-        $stmt->bind_result($name, $lesson_id, $detail, $exec_time, $memory, $hint, $difficulty);
+        $stmt->bind_result($lesson_id, $detail, $exec_time, $memory, $hint, $difficulty);
         while ($stmt->fetch()) {
             array_push(
                 $result,
                 array(
-                    "exer_name" => $name,
                     "lesson_id" => $lesson_id,
                     "exer_detail" => $detail,
                     "exer_exectime" => $exec_time,
                     "exer_mem" => $memory,
                     "exer_hint" => $hint,
-                    "exer_diff" => $difficulty,
-                    "exercise_id" => $exercise_id
+                    "exer_diff" => $difficulty
                 )
             );
         }
         $stmt->close();
-        return json_encode(array("exercise_data" => $result, "testcase_data" => $this->fetch_exercise_testcase($exercise_id)));
+        return json_encode(array("exercise_data" => $result, "testcase_data" => $this->fetchExerciseTestcase($exercise_id)));
     }
 
-    private function fetch_exercise_testcase($exercise_id)
+    private function fetchExerciseTestcase($exercise_id)
     {
         $result = array();
         $stmt = $this->mysql_connection->prepare("SELECT testcase_id, score, input, output FROM exercise_testcase " .
@@ -333,7 +331,7 @@ class Fetcher
         $stmt = $this->mysql_connection->prepare("SELECT COUNT(*) FROM users");
         $stmt->execute();
         $stmt->bind_result($count);
-        while($stmt->fetch()){
+        while ($stmt->fetch()) {
             $total_user = $count;
         }
         $stmt->close();
@@ -358,7 +356,7 @@ class Fetcher
         return json_encode(array(
             "total_score" => $total_score,
             "left_exercise" => $remaining_exercise,
-            "total_user"=>$total_user,
+            "total_user" => $total_user,
             "ranking" => $ranking
         ));
     }

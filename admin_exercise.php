@@ -212,7 +212,7 @@ if (!isset($_SESSION["admin_id"])) {
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form method="POST">
+                <form id="editExerciseForm" method="POST">
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md">
@@ -233,7 +233,7 @@ if (!isset($_SESSION["admin_id"])) {
                             <div class="col-md">
                                 <div class="form-group">
                                     <label>Execution Time (SEC)</label>
-                                    <input name="editExerciseExectime" min="1" type="number" class="form-control"
+                                    <input name="editExerciseExecTime" min="1" type="number" class="form-control"
                                         required />
                                 </div>
                             </div>
@@ -286,7 +286,7 @@ if (!isset($_SESSION["admin_id"])) {
                         <br />
                         <div class="row">
                             <div class="col-lg">
-                                <table class="table">
+                                <table class="table" id="editTestCaseList">
                                     <thead class="text-center">
                                         <tr>
                                             <th>Input</th>
@@ -294,7 +294,7 @@ if (!isset($_SESSION["admin_id"])) {
                                             <th>Score</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="editTestcaseList">
+                                    <tbody>
                                     </tbody>
                                 </table>
                             </div>
@@ -308,34 +308,34 @@ if (!isset($_SESSION["admin_id"])) {
             </div>
         </div>
     </div>
-    <div class="modal fade" id="actExerciseLessonModal" tabindex="-1" role="dialog" aria-labelledby="del_exercise_lesson_label"
+    <div class="modal fade" id="actExerciseModal" tabindex="-1" role="dialog" aria-labelledby="del_exercise_lesson_label"
         aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-md" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Select lesson that you want to
-                        activate/de-activate exercise</h5>
+                    <h5 class="modal-title">Activate/Deactivate Exercise</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <form method="POST">
-                        <div class="form-group col-md-6">
-                            <label>Lesson</label>
-                            <select name="act_exercise_lesson" class="form-control" required>
-                            </select>
+                <form id="activateExerciseForm" method="POST">
+                    <div class="modal-body">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="lessonCheck" id="lessonCheck1"/>
+                            <label class="form-check-label" for="lessonCheck1">
+                                Want to activate/deactivate exercise whole lesson
+                            </label>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success">Submit</button>
-                </div>
+                        <br />
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success">Submit</button>
+                        </div>
+                </form>
             </div>
         </div>
     </div>
-    <div class="modal fade" id="del_exercise_modal" tabindex="-1" role="dialog" aria-labelledby="del_exercise_label"
+    <div class="modal fade" id="delExerciseModal" tabindex="-1" role="dialog" aria-labelledby="del_exercise_label"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -354,19 +354,7 @@ if (!isset($_SESSION["admin_id"])) {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Nope!</button>
-                    <button type="button" class="btn btn-danger" id="del_exercise_submit">Delete Exercise Now!</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="exercise_select_warn" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <p>You didn't select any exercise!</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="delExerciseConfirm">Confirm!</button>
                 </div>
             </div>
         </div>

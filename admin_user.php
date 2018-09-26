@@ -68,9 +68,8 @@ if (!isset($_SESSION["admin_id"])) {
             </nav>
             <div class="content p-4">
                 <h1>Total User</h1>
-                <form onsubmit="event.preventDefault();">
                     <div class="row">
-                        <table id="admin_user" class="display" width="100%" cellspacing="0">
+                        <table id="admin_user" class="table table-striped table-bordered dt-responsive" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
                                     <th></th>
@@ -83,16 +82,6 @@ if (!isset($_SESSION["admin_id"])) {
                             </tbody>
                         </table>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                        </div>
-                        <div class="col-md-6">
-                            <button id="new_user" data-toggle="modal" data-target="#add_user_modal" class="btn btn-success btn-md">New User</button>
-                            <button id="edit_user" class="btn btn-primary btn-md">Edit User</button>
-                            <button id="delete_user" class="btn btn-danger btn-md">Delete User</button>
-                        </div>
-                    </div>
-                </form>
             </div>
         </div>
         </div>

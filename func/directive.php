@@ -12,6 +12,7 @@ include_once "User.php";
 $fetch = new Fetcher();
 $auth = new Authentication();
 $lesson = new Lesson();
+$exercise = new Exercise();
 
 switch ($_POST["action"]) {
     case "login":
@@ -36,10 +37,19 @@ switch ($_POST["action"]) {
         $lesson->deleteLesson($_POST["id"]);
         break;
     case "ListAdminExercise":
-        echo $fetch->fetchExercise();
+        echo $fetch->fetchAdminExercise($_SESSION["admin_id"]);
         break;
-    case "addAdminExercise":
-
+    case "addNewExercise":
+        $exercise->addExercise($_POST["data"]);
+        break;
+    case "getAdminExerciseDetail":
+        echo $fetch->fetchAdminExerciseData($_POST["data"]);
+        break;
+    case "updateAdminExercise":
+        $exercise->updateExercise($_POST["data"]);
+        break;
+    case "deleteAdminExercise":
+        $exercise->deleteExercise($_POST["data"]);
         break;
 
 }
