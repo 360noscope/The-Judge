@@ -15,9 +15,11 @@ if (!isset($_SESSION["admin_id"])) {
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
             crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
+            crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
         <link rel="stylesheet" href="css/bsadmin.css">
         <link rel="stylesheet" href="css/common.css">
-        <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
     </head>
 
     <body>
@@ -38,7 +40,9 @@ if (!isset($_SESSION["admin_id"])) {
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profile-link">
                             <a class="dropdown-item" href="#">My Profile</a>
-                            <a class="dropdown-item" href="func/logout.php">Logout</a>
+                            <form id="logout_form" method="POST">
+                                <button type="submit" class="dropdown-item">Logout</a>
+                            </form>
                         </div>
                     </li>
                 </ul>
@@ -67,15 +71,16 @@ if (!isset($_SESSION["admin_id"])) {
                 </ul>
             </nav>
             <div class="content p-4">
-                <h1>Total User</h1>
+                <h1>The Judge: Users</h1>
                     <div class="row">
-                        <table id="admin_user" class="table table-striped table-bordered dt-responsive" width="100%" cellspacing="0">
+                        <table id="adminUser" class="table table-striped table-bordered dt-responsive" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
                                     <th></th>
                                     <th>Name</th>
-                                    <th>Score</th>
-                                    <th>Role</th>
+                                    <th>Group</th>
+                                    <th></th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -85,29 +90,29 @@ if (!isset($_SESSION["admin_id"])) {
             </div>
         </div>
         </div>
-        <div class="modal fade d-example-modal-lg" id="add_user_modal" tabindex="-1" role="dialog" aria-labelledby="add_lesson_label"
+        <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="add_lesson_label"
             aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-dialog modal-md" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="add_lesson_label">Add New User</h5>
+                        <h5 class="modal-title">Add New User</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form>
+                    <form id="addUserForm" method="POST">
                         <div class="modal-body">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Username</label>
-                                        <input name="add_username" class="form-control" required />
+                                        <input name="addUsername" class="form-control" required />
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Password</label>
-                                        <input name="add_user_password" type="password" class="form-control" required />
+                                        <input name="addUserPassword" type="password" class="form-control" required />
                                     </div>
                                 </div>
                             </div>
@@ -115,7 +120,7 @@ if (!isset($_SESSION["admin_id"])) {
                                 <div class="col-lg-8">
                                     <div class="form-group">
                                         <label>Name</label>
-                                        <input name="add_user_name" class="form-control" required></input>
+                                        <input name="addUserName" class="form-control" required></input>
                                     </div>
                                 </div>
                             </div>
@@ -123,7 +128,7 @@ if (!isset($_SESSION["admin_id"])) {
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Role</label>
-                                        <select name="add_user_role" class="form-control" required>
+                                        <select name="addUserRole" class="form-control" required>
                                             <option value="STUDENT">Student</option>
                                             <option value="ADMIN">Admin</option>
                                             <option value="SUPER ADMIN">Super Admin</option>
@@ -134,35 +139,35 @@ if (!isset($_SESSION["admin_id"])) {
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" id="add_user_submit" class="btn btn-primary">Save User</button>
+                            <button type="submit" class="btn btn-primary">Save User</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        <div class="modal fade d-example-modal-lg" id="edit_user_modal" tabindex="-1" role="dialog" aria-labelledby="add_lesson_label"
+        <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="add_lesson_label"
             aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-dialog modal-md" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="add_lesson_label">Edit Selected User</h5>
+                        <h5 class="modal-title">Edit Selected User</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form>
+                    <form id="editUserForm" method="POST">
                         <div class="modal-body">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Username</label>
-                                        <input name="edit_username" class="form-control" required />
+                                        <input name="editUsername" class="form-control" required />
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Password</label>
-                                        <input name="edit_user_password" type="password" class="form-control" required />
+                                        <input name="editUserPassword" type="password" class="form-control" required />
                                     </div>
                                 </div>
                             </div>
@@ -170,7 +175,7 @@ if (!isset($_SESSION["admin_id"])) {
                                 <div class="col-lg-8">
                                     <div class="form-group">
                                         <label>Name</label>
-                                        <input name="edit_user_name" class="form-control" required></input>
+                                        <input name="editUserName" class="form-control" required></input>
                                     </div>
                                 </div>
                             </div>
@@ -178,7 +183,7 @@ if (!isset($_SESSION["admin_id"])) {
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Role</label>
-                                        <select name="edit_user_role" class="form-control" required>
+                                        <select name="editUserRole" class="form-control" required>
                                             <option value="STUDENT">Student</option>
                                             <option value="ADMIN">Admin</option>
                                             <option value="SUPER ADMIN">Super Admin</option>
@@ -189,7 +194,7 @@ if (!isset($_SESSION["admin_id"])) {
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" id="edit_user_submit" class="btn btn-primary">Save User</button>
+                            <button type="submit" class="btn btn-primary">Save User</button>
                         </div>
                     </form>
                 </div>
@@ -219,18 +224,7 @@ if (!isset($_SESSION["admin_id"])) {
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="user_select_warn" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <p>You didn't select any user!</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+
         <div class="modal fade" id="same_user_warn" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -245,9 +239,9 @@ if (!isset($_SESSION["admin_id"])) {
         </div>
         <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
         <script src="js/bsadmin.js"></script>
-        <script src="js/common.js"></script>
-        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+        <script src="js/admin_user.js"></script>
+        <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
             crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"

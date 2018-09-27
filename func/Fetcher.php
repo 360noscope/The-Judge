@@ -185,12 +185,12 @@ class Fetcher
     public function fetchAdminExercise($id)
     {
         $result = array();
-        $stmt = $this->mysql_connection->prepare("SELECT @prob_id := exercise.exercise_id, exercise.exercise_name, " .
+        $stmt = $this->mysql_connection->prepare("SELECT @prob_id := exercise.exercise_id, lesson.lesson_id, exercise.exercise_name, " .
             "lesson.lesson_name, (SELECT COUNT(*) FROM exercise_testcase WHERE exercise_id = @prob_id), exercise.exercise_status FROM lesson " .
             "JOIN exercise ON exercise.lesson_id = lesson.lesson_id WHERE lesson.owner_id = ?");
         $stmt->bind_param("s", $id);
         $stmt->execute();
-        $stmt->bind_result($id, $name, $lesson, $case_count, $status);
+        $stmt->bind_result($id, $lesson_id, $name, $lesson, $case_count, $status);
         while ($stmt->fetch()) {
             $exercise_status_text = "Not Display";
             $exercise_status_class = "badge badge-danger";
@@ -198,7 +198,7 @@ class Fetcher
                 $exercise_status_text = "Displayed";
                 $exercise_status_class = "badge badge-success";
             }
-            array_push($result, array($id, $name, $lesson, $case_count, "<h5 class='text-center'><span class='" . $exercise_status_class . "'>" . $exercise_status_text . "</span></h5>"));
+            array_push($result, array($id, $lesson_id, $name, $lesson, $case_count, "<h5 class='text-center'><span class='" . $exercise_status_class . "'>" . $exercise_status_text . "</span></h5>"));
         }
         $stmt->close();
         return json_encode(array("data" => $result));
@@ -249,48 +249,32 @@ class Fetcher
         return $result;
     }
 
-    public function fetch_exercise_name($exercise_id)
-    {
-        $result = "";
-        $stmt = $this->mysql_connection->prepare("SELECT exercise_name FROM exercise WHERE exercise_id = ?");
-        $stmt->bind_param("s", $exercise_id);
-        $stmt->execute();
-        $stmt->bind_result($name);
-        while ($stmt->fetch()) {
-            $result = $name;
-        }
-        $stmt->close();
-        return $result;
-    }
-
-    public function fetch_admin_user_list()
+    public function fetchUserList()
     {
         $result = array();
-        $stmt = $this->mysql_connection->prepare("SELECT users.user_id, users.role, user_detail.name, user_detail.score " .
+        $stmt = $this->mysql_connection->prepare("SELECT users.user_id, users.role, user_detail.name " .
             "FROM users JOIN user_detail ON users.user_id = user_detail.user_id");
         $stmt->execute();
-        $stmt->bind_result($id, $role, $name, $score);
+        $stmt->bind_result($id, $role, $name);
         while ($stmt->fetch()) {
             array_push($result, array(
-                "<input type='radio' name='user_id' value='" . $id . "'>",
-                $name, $score, $role
+                $id, $name, $role
             ));
         }
         $stmt->close();
         return json_encode(array("data" => $result));
     }
 
-    public function fetch_user_data($user_id)
+    public function fetchUserData($user_id)
     {
         $result = array();
-        $stmt = $this->mysql_connection->prepare("SELECT users.role, user_detail.name, users.username " .
-            "FROM users JOIN user_detail ON users.user_id = user_detail.user_id " .
-            "WHERE users.user_id = ?");
+        $stmt = $this->mysql_connection->prepare("SELECT role, username " .
+            "FROM users WHERE user_id = ?");
         $stmt->bind_param("s", $user_id);
         $stmt->execute();
-        $stmt->bind_result($role, $name, $username);
+        $stmt->bind_result($role, $username);
         while ($stmt->fetch()) {
-            $result = array("username" => $username, "name" => $name, "role" => $role);
+            $result = array("username" => $username, "role" => $role);
         }
         $stmt->close();
         return json_encode($result);

@@ -19,7 +19,7 @@ class User
         $this->mysql_connection = new mysqli($this->db_server, $this->db_username, $this->db_password, $this->db);
     }
 
-    public function add_user($data)
+    public function addUser($data)
     {
         $result = "true";
         if ($this->isUserExists($data["username"], false) == false) {
@@ -29,11 +29,19 @@ class User
             $stmt->execute();
             $user_id = $stmt->insert_id;
             $stmt->close();
-            $this->add_user_detail($user_id, $data);
+            $this->addUserDetail($user_id, $data);
         } else {
             $result = "false";
         }
         return $result;
+    }
+
+    private function addUserDetail($user_id, $data)
+    {
+        $stmt = $this->mysql_connection->prepare("INSERT INTO user_detail (user_id, name) VALUES(?, ?)");
+        $stmt->bind_param("ss", $user_id, $data["name"]);
+        $stmt->execute();
+        $stmt->close();
     }
 
     public function edit_user($data)
@@ -67,32 +75,38 @@ class User
         $stmt->close();
     }
 
-    private function isUserExists($user, $isUpdate, $user_id=0)
+    private function isUserExists($user)
     {
         $result = false;
-        if ($isUpdate == true) {
-            $stmt = $this->mysql_connection->prepare("SELECT username FROM users WHERE username = ? AND user_id != ?");
-            $stmt->bind_param("ss", $user, $user_id);
-        }else{
-            $stmt = $connection->prepare("SELECT username FROM users WHERE username = ?");
+        try{
+            $stmt = $this->mysql_connection->prepare("SELECT COUNT(*) FROM users WHERE username = ?");
             $stmt->bind_param("s", $user);
+            $stmt->execute();
+            $stmt->bind_result($user_count);
+            while($stmt->fetch()){
+                if($user_count > 0){
+                    $result = true;
+                }
+            }
+        }catch(Exception $ex){
+            return $ex;
         }
-        $stmt->execute();
-        $stmt->store_result();
-        $result = $stmt->num_rows;
-        if ($result > 0) {
-            $result = true;
-        }
-        $stmt->close();
         return $result;
     }
 
-    private function add_user_detail($user_id, $data)
+    private function orderID(){
+        try {
+            $stmt = $this->mysql_connection->prepare("ALTER TABLE users AUTO_INCREMENT = 1");
+            $stmt->execute();
+            $stmt->close();
+        } catch (Exception $ex) {
+            return $ex;
+        }
+    }
+
+    public function __destruct()
     {
-        $stmt = $this->mysql_connection->prepare("INSERT INTO user_detail (user_id, name) VALUES(?, ?)");
-        $stmt->bind_param("is", intval($user_id), $data["name"]);
-        $stmt->execute();
-        $stmt->close();
+        $this->mysql_connection->close();
     }
 }
 ?>

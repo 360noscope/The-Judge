@@ -79,6 +79,7 @@ if (!isset($_SESSION["admin_id"])) {
                     <thead>
                         <tr>
                             <th></th>
+                            <th></th>
                             <th>Name</th>
                             <th>Lesson</th>
                             <th>Total case</th>
@@ -323,7 +324,7 @@ if (!isset($_SESSION["admin_id"])) {
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="lessonCheck" id="lessonCheck1"/>
                             <label class="form-check-label" for="lessonCheck1">
-                                Want to activate/deactivate exercise whole lesson
+                                activate/deactivate exercise for whole lesson
                             </label>
                         </div>
                         <br />

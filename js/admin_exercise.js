@@ -17,12 +17,10 @@ $(document).ready(function () {
                 "orderable": false
             },
             {
-                "targets": [5],
-                "visible": true,
+                "targets": [1],
+                "visible": false,
                 "searchable": false,
-                "orderable": false,
-                "className": "text-center",
-                "defaultContent": "<button class='btn btn-warning' name='edit-exercise'>Edit</button>"
+                "orderable": false
             },
             {
                 "targets": [6],
@@ -30,10 +28,18 @@ $(document).ready(function () {
                 "searchable": false,
                 "orderable": false,
                 "className": "text-center",
-                "defaultContent": "<button class='btn btn-danger' name='del-exercise'>Delete</button>"
+                "defaultContent": "<button class='btn btn-warning' name='edit-exercise'>Edit</button>"
             },
             {
                 "targets": [7],
+                "visible": true,
+                "searchable": false,
+                "orderable": false,
+                "className": "text-center",
+                "defaultContent": "<button class='btn btn-danger' name='del-exercise'>Delete</button>"
+            },
+            {
+                "targets": [8],
                 "visible": true,
                 "searchable": false,
                 "orderable": false,
@@ -138,11 +144,11 @@ $("#addExerciseForm").on("submit", function () {
     return false;
 });
 
-var editInputCount = 1, selectedExercise;
+var editInputCount = 1, selectedExercise, selectedExerciseLesson;
 $(document).on('click', "button[name='edit-exercise']", function () {
     var exerciseData = adminExerciseTable.row($(this).parents('tr')).data();
     selectedExercise = exerciseData[0];
-    $("#lessonEditName").html(exerciseData[1]);
+    $("#lessonEditName").html(exerciseData[2]);
     $("textarea[name='editExerciseDetail']").summernote();
     $("textarea[name='editExerciseHint']").summernote();
     $.ajax({
@@ -174,7 +180,7 @@ $(document).on('click', "button[name='edit-exercise']", function () {
             var exercise_return = JSON.parse(data);
             var exercise_data = exercise_return.exercise_data[0],
                 testcase = exercise_return.testcase_data;
-            $("input[name='editExerciseName']").val(exerciseData[1]);
+            $("input[name='editExerciseName']").val(exerciseData[2]);
             $("select[name='editExerciseLesson'] option:selected").val(exercise_data.lesson_id);
             $("input[name='editExerciseExectime']").val(exercise_data.exer_exectime);
             $("input[name='editExerciseExecMem']").val(exercise_data.exer_mem);
@@ -248,7 +254,7 @@ $("#editExerciseForm").on("submit", function () {
 $(document).on('click', "button[name='del-exercise']", function () {
     var exerciseData = adminExerciseTable.row($(this).parents('tr')).data();
     selectedExercise = exerciseData[0];
-    $("#delExerciseName").html(exerciseData[1]);
+    $("#delExerciseName").html(exerciseData[2]);
     $("#delExerciseModal").modal("toggle");
     return false;
 });
@@ -272,7 +278,34 @@ $('#delExerciseConfirm').on('click', function () {
 $(document).on('click', "button[name='act-exercise']", function () {
     var exerciseData = adminExerciseTable.row($(this).parents('tr')).data();
     selectedExercise = exerciseData[0];
+    selectedExerciseLesson = exerciseData[1];
     $("#actExerciseModal").modal("toggle");
+    return false;
+});
+
+$("#activateExerciseForm").on("submit", function () {
+    var isLesson = "NO";
+    if ($("input[name='lessonCheck']").is(':checked') == true) {
+        isLesson = "YES";
+    }
+    var activate_data = {
+        "id": selectedExercise,
+        "lesson": selectedExerciseLesson,
+        "isLesson": isLesson
+    }
+    console.log(isLesson);
+    $.ajax({
+        type: 'POST',
+        url: 'func/directive.php',
+        data: {
+            "action": "activateExercise",
+            "data": activate_data
+        },
+        success: function (data) {
+            $("#actExerciseModal").modal("hide");
+            adminExerciseTable.ajax.reload();
+        }
+    });
     return false;
 });
 

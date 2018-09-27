@@ -13,6 +13,7 @@ $fetch = new Fetcher();
 $auth = new Authentication();
 $lesson = new Lesson();
 $exercise = new Exercise();
+$user = new User();
 
 switch ($_POST["action"]) {
     case "login":
@@ -51,6 +52,23 @@ switch ($_POST["action"]) {
     case "deleteAdminExercise":
         $exercise->deleteExercise($_POST["data"]);
         break;
-
+    case "activateExercise":
+        if ($_POST["data"]["isLesson"] == "NO") {
+            $exercise->activateExercise($_POST["data"]["id"]);
+        } else {
+            $exercise->activateExerciseLesson($_POST["data"]["lesson"]);
+        }
+        break;
+    case "ListUser":
+        echo $fetch->fetchUserList();
+        break;
+    case "addUser":
+        echo $user->addUser($_POST["data"]);
+        break;
+    case "detailUser":
+        echo $fetch->fetchUserData($_POST["data"]);
+        break;
+    case "updateUser":
+        break;
 }
 ?>

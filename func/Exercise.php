@@ -52,7 +52,7 @@ class Exercise
         return "Done add exercise!" . $exercise_id;
     }
 
-    public function activate_exercise($exercise_id)
+    public function activateExercise($exercise_id)
     {
         $stmt = $this->mysql_connection->prepare("UPDATE exercise SET" .
             " exercise_status = IF(exercise_status = 'HIDDEN', 'ACTIVATED', 'HIDDEN') " .
@@ -60,9 +60,8 @@ class Exercise
         $stmt->bind_param("s", $exercise_id);
         $stmt->execute();
         $stmt->close();
-        return $exercise_id . " Activated!";
     }
-    public function activate_exercise_by_lesson($lesson_id)
+    public function activateExerciseLesson($lesson_id)
     {
         $stmt = $this->mysql_connection->prepare("UPDATE exercise SET" .
             " exercise_status = IF(exercise_status = 'HIDDEN', 'ACTIVATED', 'HIDDEN') " .
@@ -70,7 +69,6 @@ class Exercise
         $stmt->bind_param("s", $lesson_id);
         $stmt->execute();
         $stmt->close();
-        return $exercise_id . " Activated!";
     }
 
     public function updateExercise($exercise_data)
