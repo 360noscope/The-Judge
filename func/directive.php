@@ -69,6 +69,27 @@ switch ($_POST["action"]) {
         echo $fetch->fetchUserData($_POST["data"]);
         break;
     case "updateUser":
+        $user->updateUser($_POST["data"]);
+        break;
+    case "SameAccountSafe":
+        if ($_SESSION["admin_id"] == $_POST["data"]) {
+            echo "nope";
+        }
+        break;
+    case "deleteUser":
+        $user->deleteUser($_POST["data"]);
+        break;
+    case "ListUserLesson":
+        echo $fetch->fetchLesson();
+        break;
+    case "enrollLesson":
+        $lesson->enroll($_POST["lesson_id"]);
+        break;
+    case "unenrollLesson":
+        $lesson->unenroll($_POST["lesson_id"]);
+        break;
+    case "fetchExerciseList":
+        echo $fetch->fetchExercise();
         break;
 }
 ?>

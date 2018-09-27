@@ -200,12 +200,12 @@ if (!isset($_SESSION["admin_id"])) {
                 </div>
             </div>
         </div>
-        <div class="modal fade d-example-modal-lg" id="del_user_modal" tabindex="-1" role="dialog" aria-labelledby="del_lesson_label"
+        <div class="modal fade" id="delUserModal" tabindex="-1" role="dialog" aria-labelledby="del_lesson_label"
             aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-dialog modal-md" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="del_lesson_label">Deleted Selected User</h5>
+                        <h5 class="modal-title">Deleted Selected User</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -213,19 +213,19 @@ if (!isset($_SESSION["admin_id"])) {
                     <div class="modal-body">
                         Do you want to delete below user ?
                         <b>
-                            <p id="del_user_name"></p>
+                            <p id="delUserName"></p>
                         </b>
                         <b class="text-danger">This will also delete user's data on the System!</b>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Nope!</button>
-                        <button type="button" class="btn btn-danger" id="del_user_submit">Delete User Now!</button>
+                        <button type="button" class="btn btn-danger" id="confirmUserDelete">Confirm!</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="modal fade" id="same_user_warn" tabindex="-1" role="dialog">
+        <div class="modal fade" id="userWarn" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-body">

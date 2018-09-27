@@ -44,57 +44,55 @@ class User
         $stmt->close();
     }
 
-    public function edit_user($data)
+    public function updateUser($data)
     {
-        $result = "true";
-        if ($this->isUserExists($data["username"], true, $data["user_id"]) == false) {
-            $hashed_password = hash_pbkdf2($this->algor, $data["password"], $this->salt, $this->iterations, $this->length);
-            $stmt = $this->mysql_connection->prepare("UPDATE users SET username=?, password=?, role=? WHERE user_id=?");
-            $stmt->bind_param("ssss", $data["username"], $hashed_password, $data["role"], $data["user_id"]);
-            $stmt->execute();
-            $stmt->close();
-            $this->update_user_detail($data);
-        } else {
-            $result = "false";
-        }
-        return $result;
+        $hashed_password = hash_pbkdf2($this->algor, $data["password"], $this->salt, $this->iterations, $this->length);
+        $stmt = $this->mysql_connection->prepare("UPDATE users SET username=?, password=?, role=? WHERE user_id=?");
+        $stmt->bind_param("ssss", $data["username"], $hashed_password, $data["role"], $data["id"]);
+        $stmt->execute();
+        $stmt->close();
+        $this->updateUserDetail($data);
     }
 
-    public function delete_user($user_id){
+    private function updateUserDetail($data)
+    {
+        $stmt = $this->mysql_connection->prepare("UPDATE user_detail SET name=? WHERE user_id = ?");
+        $stmt->bind_param("ss", $data["name"], $data["id"]);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    public function deleteUser($user_id)
+    {
         $stmt = $this->mysql_connection->prepare("DELETE FROM users WHERE user_id = ?");
         $stmt->bind_param("s", $user_id);
         $stmt->execute();
         $stmt->close();
-    }
 
-    private function update_user_detail($data)
-    {
-        $stmt = $this->mysql_connection->prepare("UPDATE user_detail SET name=? WHERE user_id = ?");
-        $stmt->bind_param("ss", $data["name"], $data["user_id"]);
-        $stmt->execute();
-        $stmt->close();
+        $this->orderID();
     }
 
     private function isUserExists($user)
     {
         $result = false;
-        try{
+        try {
             $stmt = $this->mysql_connection->prepare("SELECT COUNT(*) FROM users WHERE username = ?");
             $stmt->bind_param("s", $user);
             $stmt->execute();
             $stmt->bind_result($user_count);
-            while($stmt->fetch()){
-                if($user_count > 0){
+            while ($stmt->fetch()) {
+                if ($user_count > 0) {
                     $result = true;
                 }
             }
-        }catch(Exception $ex){
+        } catch (Exception $ex) {
             return $ex;
         }
         return $result;
     }
 
-    private function orderID(){
+    private function orderID()
+    {
         try {
             $stmt = $this->mysql_connection->prepare("ALTER TABLE users AUTO_INCREMENT = 1");
             $stmt->execute();

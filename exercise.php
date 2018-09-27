@@ -22,7 +22,8 @@ if (!isset($_SESSION["stu_id"])) {
     <link rel="stylesheet" href="css/bsadmin.css">
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
-    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
+        crossorigin="anonymous">
 </head>
 
 <body>
@@ -54,19 +55,19 @@ if (!isset($_SESSION["stu_id"])) {
         <nav class="sidebar bg-dark">
             <ul class="list-unstyled">
                 <li>
-                    <a href="dashboard.php">
+                    <a href="/the_judge/dashboard.php">
                         <i class="fas fa-heartbeat"></i> Dashboard</a>
                 </li>
                 <li>
-                    <a href="lesson.php">
+                    <a href="/the_judge/lesson.php">
                         <i class="fas fa-book"></i> Judge Lesson</a>
                 </li>
                 <li>
-                    <a href="problem.php">
+                    <a href="/the_judge/problem.php">
                         <i class="fas fa-balance-scale"></i> Judge Exercise</a>
                 </li>
                 <li>
-                    <a href="submit_history.php">
+                    <a href="/the_judge/submit_history.php">
                         <i class="fas fa-check-circle"></i> Your Submit History</a>
                 </li>
             </ul>

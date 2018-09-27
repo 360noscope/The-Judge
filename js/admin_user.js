@@ -108,6 +108,7 @@ $(document).on('click', "button[name='edit-user']", function () {
 
 $("#editUserForm").on("submit", function () {
     var userData = {
+        "id": selectedUser,
         "name": $("input[name='editUserName']").val(),
         "password": $("input[name='editUserPassword']").val(),
         "username": $("input[name='editUsername']").val(),
@@ -123,6 +124,44 @@ $("#editUserForm").on("submit", function () {
         success: function (data) {
             userTable.ajax.reload();
             $("#editUserModal").modal("hide");
+        }
+    });
+    return false;
+});
+
+$(document).on('click', "button[name='del-user']", function () {
+    var userData = userTable.row($(this).parents('tr')).data();
+    $.ajax({
+        type: 'POST',
+        url: 'func/directive.php',
+        data: {
+            "action": "SameAccountSafe",
+            "data": userData[0]
+        },
+        success: function (data) {
+            if (data == "nope") {
+                $("#userWarn").modal("toggle");
+            } else {
+                selectedUser = userData[0];
+                $("#delUserName").html(userData[1]);
+                $("#delUserModal").modal("toggle");
+            }
+        }
+    });
+    return false;
+});
+
+$(document).on('click', "#confirmUserDelete", function () {
+    $.ajax({
+        type: 'POST',
+        url: 'func/directive.php',
+        data: {
+            "action": "deleteUser",
+            "data": selectedUser
+        },
+        success: function (data) {
+            userTable.ajax.reload();
+            $("#delUserModal").modal("hide");
         }
     });
     return false;

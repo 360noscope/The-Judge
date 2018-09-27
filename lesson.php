@@ -7,6 +7,7 @@ if(!isset($_SESSION["stu_id"])){
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,10 +17,12 @@ if(!isset($_SESSION["stu_id"])){
         crossorigin="anonymous">
     <link rel="stylesheet" href="css/bsadmin.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
-    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>  
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
+        crossorigin="anonymous">
 </head>
+
 <body>
-<nav class="navbar navbar-expand navbar-dark bg-success">
+    <nav class="navbar navbar-expand navbar-dark bg-success">
         <a class="sidebar-toggle text-light mr-3">
             <i class="fa fa-bars"></i>
         </a>
@@ -31,11 +34,14 @@ if(!isset($_SESSION["stu_id"])){
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="profile-link" data-toggle="dropdown">
-                        <i class="fa fa-address-card"></i> <?php echo $_SESSION["stu_name"]; ?>
+                        <i class="fa fa-address-card"></i>
+                        <?php echo $_SESSION["stu_name"]; ?>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profile-link">
                         <a class="dropdown-item" href="#">My Profile</a>
-                        <a class="dropdown-item" href="func/logout.php">Logout</a>
+                        <form id="logout_form" method="POST">
+                            <button type="submit" class="dropdown-item">Logout</a>
+                        </form>
                     </div>
                 </li>
             </ul>
@@ -45,7 +51,7 @@ if(!isset($_SESSION["stu_id"])){
     <div class="d-flex">
         <nav class="sidebar bg-dark">
             <ul class="list-unstyled">
-            <li>
+                <li>
                     <a href="dashboard.php">
                         <i class="fas fa-heartbeat"></i> Dashboard</a>
                 </li>
@@ -65,26 +71,25 @@ if(!isset($_SESSION["stu_id"])){
         </nav>
         <div class="content p-4">
             <h1>The Judge Lesson</h1>
-            <form method="post" onsubmit="event.preventDefault();">
-                <table id="lesson" class="display" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>Lesson</th>
-                            <th>Detail</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </form>
+            <table id="lesson" class="table table-striped table-bordered dt-responsive"" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Lesson</th>
+                        <th>Detail</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+        crossorigin="
         anonymous "></script>
     <script src="js/bsadmin.js"></script>
-    <script src="js/common.js"></script>
+    <script src="js/lesson.js"></script>
     <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q "

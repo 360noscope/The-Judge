@@ -206,7 +206,7 @@ if (!isset($_SESSION["admin_id"])) {
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit Selected Lesson:
+                    <h5 class="modal-title">Edit Selected Exercise:
                         <b id="lessonEditName"></b>
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -322,7 +322,7 @@ if (!isset($_SESSION["admin_id"])) {
                 <form id="activateExerciseForm" method="POST">
                     <div class="modal-body">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="lessonCheck" id="lessonCheck1"/>
+                            <input class="form-check-input" type="checkbox" name="lessonCheck" id="lessonCheck1" />
                             <label class="form-check-label" for="lessonCheck1">
                                 activate/deactivate exercise for whole lesson
                             </label>
@@ -341,7 +341,7 @@ if (!isset($_SESSION["admin_id"])) {
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="del_exercise_label">Deleted Selected Exercise</h5>
+                    <h5 class="modal-title">Deleted Selected Exercise</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -362,15 +362,17 @@ if (!isset($_SESSION["admin_id"])) {
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
         crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote-bs4.js"></script>
     <script src="js/bsadmin.js"></script>
     <script src="js/admin_exercise.js"></script>
     <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
+
+
 
 </body>
 

@@ -1,6 +1,6 @@
 <?php 
 session_start();
-if(!isset($_SESSION["stu_id"])){
+if (!isset($_SESSION["stu_id"])) {
     header("Location: /login.php");
     die();
 }
@@ -16,7 +16,8 @@ if(!isset($_SESSION["stu_id"])){
         crossorigin="anonymous">
     <link rel="stylesheet" href="css/bsadmin.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
-    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
+            crossorigin="anonymous">
 </head>
 <body>
 <nav class="navbar navbar-expand navbar-dark bg-success">
@@ -65,7 +66,7 @@ if(!isset($_SESSION["stu_id"])){
         </nav>
         <div class="content p-4">
             <h1>Your submit</h1>
-                <table id="submit_history" class="display" width="100%" cellspacing="0">
+                <table id="submit_history" class="table table-striped table-bordered dt-responsive" width="100%" cellspacing="0">
                         <thead>
                             <tr>
                                 <th>Problem Name</th>

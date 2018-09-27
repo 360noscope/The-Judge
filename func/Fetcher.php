@@ -15,7 +15,7 @@ class Fetcher
         $this->mysql_connection = new mysqli($this->db_server, $this->db_username, $this->db_password, $this->db);
     }
 
-    public function fetch_exercise_detail($id)
+    public function fetchExerciseDetail($id)
     {
         $result = array();
         $exercise_done_msg = "";
@@ -50,7 +50,6 @@ class Fetcher
             ));
         }
         $stmt->close();
-        $this->mysql_connection->close();
         $_SESSION["selected_exercise"] = $id;
         $_SESSION["mem_limit"] = $memory;
         $_SESSION["time_limit"] = $exectime;
@@ -59,7 +58,7 @@ class Fetcher
         return $result;
     }
 
-    public function fetch_lesson()
+    public function fetchLesson()
     {
         $result = array();
         $stmt = $this->mysql_connection->prepare("SELECT @les_id := lesson_id, lesson_name, lesson_detail, " .
@@ -69,16 +68,16 @@ class Fetcher
         $stmt->bind_result($id, $name, $detail, $enrolled);
         while ($stmt->fetch()) {
             $btn_style = "btn btn-success";
-            $btn_text = "Enroll me!";
+            $btn_text = "Enroll!";
             $btn_call = "enroll_lesson(this.value)";
             if ($enrolled != 0) {
                 $btn_style = "btn btn-danger";
-                $btn_text = "Unenroll me!";
+                $btn_text = "Unenroll!";
                 $btn_call = "unenroll_lesson(this.value)";
             }
             array_push(
                 $result,
-                array($name, $detail, "<button type='submit' onclick='" . $btn_call . "' name='lesson_id' value='" . $id . "' class='" . $btn_style . "'>" . $btn_text . "</buton>")
+                array($name, $detail, "<button type='button' onclick='" . $btn_call . "' name='lesson_id' value='" . $id . "' class='" . $btn_style . "'>" . $btn_text . "</buton>")
             );
         }
         $stmt->close();
@@ -137,7 +136,7 @@ class Fetcher
                 "<span class='fa fa-star' style='color: " . $rate4 . ";'></span>" .
                 "<span class='fa fa-star' style='color: " . $rate5 . ";'></span>" .
                 "</div></div></div>";
-            array_push($result, array($name, $lesson_name, $star));
+            array_push($result, array($id, $name, $lesson_name, $star));
         }
         $stmt->close();
         return json_encode(array("data" => $result));
