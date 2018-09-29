@@ -44,14 +44,16 @@ $("#logout_form").on("submit", function () {
     return false;
 });
 
-var selectedExercise;
 $(document).on('click', "button[name='gotoExercise']", function () {
     var exerciseData = problemTable.row($(this).parents('tr')).data();
     $.ajax({
         type: 'POST',
-        url: 'exercise.php',
+        url: 'func/directive.php',
         data: {
             "data": exerciseData[0]
+        },
+        success: function (data) {
+            $.redirect("exercise.php", {'data': data});
         }
     });
     return false;

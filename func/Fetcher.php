@@ -32,7 +32,6 @@ class Fetcher
         }
         $stmt->close();
 
-        $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
         $stmt = $this->mysql_connection->prepare("SELECT exercise_name, exercise_detail, difficulty, hint, exec_time, exec_memory, completed_score FROM exercise WHERE " .
             "exercise_id = ?");
         $stmt->bind_param("s", $id);
@@ -40,13 +39,13 @@ class Fetcher
         $stmt->bind_result($name, $detail, $difficulty, $hint, $exectime, $memory, $completed_score);
         while ($stmt->fetch()) {
             array_push($result, array(
-                "exercise_name" => $name,
-                "exercise_detail" => $detail,
-                "exercise_diff" => $difficulty,
-                "exercise_hint" => $hint,
-                "time_limit" => $exectime,
-                "memory_limit" => $memory,
-                "done_msg" => $exercise_done_msg
+                "exerciseName" => $name,
+                "exerciseDetail" => $detail,
+                "exerciseDiff" => $difficulty,
+                "exerciseHint" => $hint,
+                "timeLimit" => $exectime,
+                "memoryLimit" => $memory,
+                "doneMsg" => $exercise_done_msg
             ));
         }
         $stmt->close();
@@ -55,7 +54,7 @@ class Fetcher
         $_SESSION["time_limit"] = $exectime;
         $_SESSION["selected_exercise_name"] = $name;
         $_SESSION["completed_score"] = $completed_score;
-        return $result;
+        return json_encode($result);
     }
 
     public function fetchLesson()

@@ -91,5 +91,8 @@ switch ($_POST["action"]) {
     case "fetchExerciseList":
         echo $fetch->fetchExercise();
         break;
+    case "fetchExerciseDetail":
+        echo $fetch->fetchExerciseDetail($_POST["data"]);
+        break;
 }
 ?>
