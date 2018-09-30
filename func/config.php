@@ -12,8 +12,8 @@ $length = 32;
 $algor = "sha256";
 
 //FTP Config
-$ftp_host = "172.31.22.247";
-$ftp_user = "judge";
+$ftp_host = "ec2-13-251-229-81.ap-southeast-1.compute.amazonaws.com";
+$ftp_user = "kopai";
 $ftp_pass = "P@ssw0rd";
 $ftp_timeout = 20000;
 $ftp_port = 21;

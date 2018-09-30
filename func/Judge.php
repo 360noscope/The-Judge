@@ -5,7 +5,7 @@ include_once("config.php");
 class Judge
 {
     var $user_id, $exercise_id, $exercise_name, $memory_limit, $time_limit, $mysql_connection,
-        $completed_score, $db_server, $db_username, $db_password, $db, $con, $ftp_path;
+        $completed_score, $con, $ftp_path;
     public function __construct()
     {
         global $mysql_server, $username, $password, $database, $ftp_host, $ftp_port, $ftp_timeout,
@@ -16,14 +16,10 @@ class Judge
         $this->time_limit = $_SESSION["time_limit"];
         $this->exercise_name = $_SESSION["selected_exercise_name"];
         $this->completed_score = $_SESSION["completed_score"];
-        $this->db_server = $mysql_server;
-        $this->db_username = $username;
-        $this->db_password = $password;
-        $this->db = $database;
         $this->ftp_path = $ftp_path;
         $this->con = ftp_connect($ftp_host, $ftp_port, $ftp_timeout);
         ftp_login($this->con, $ftp_user, $ftp_pass);
-        $this->mysql_connection = new mysqli($this->db_server, $this->db_username, $this->db_password, $this->db);
+        $this->mysql_connection = new mysqli($mysql_server, $username, $password, $database);
     }
 
     public function judging($file)
@@ -85,7 +81,6 @@ class Judge
             $case_counter += 1;
         }
         $this->removeInput($testcase_list);
-        ftp_close($this->con);
         $this->killContainer($container_id);
         $this->recordSession($exec_result, $case_counter);
 
@@ -141,7 +136,6 @@ class Judge
             $input_output_counter += 1;
         }
         $stmt->close();
-        $this->mysql_connection->close();
         return $result;
     }
 
@@ -297,8 +291,6 @@ class Judge
                 $total_score += intval($result_item["score"]);
             }
         }
-
-        $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
         $stmt = $this->mysql_connection->prepare("SELECT COUNT(*) FROM exercise_session WHERE " .
             "user_id = ? AND exercise_id = ?");
         $stmt->bind_param("ss", $this->user_id, $this->exercise_id);
@@ -310,10 +302,8 @@ class Judge
             }
         }
         $stmt->close();
-        $this->mysql_connection->close();
 
         $completed_total_score = $total_score + intval($this->completed_score);
-        $this->mysql_connection->connect($this->db_server, $this->db_username, $this->db_password, $this->db);
         if ($is_session_exist === false) {
             $stmt = $this->mysql_connection->prepare("INSERT INTO exercise_session " .
                 "(user_id, exercise_id, passed_case, complete_date, try_date, total_score) VALUES(?, ?, ?, ?, ?, ?)");
@@ -347,6 +337,10 @@ class Judge
             $stmt->close();
             //$this->updatingUserScore($completed_score);
         }
+    }
+
+    public function __destruct()
+    {
         $this->mysql_connection->close();
     }
 }

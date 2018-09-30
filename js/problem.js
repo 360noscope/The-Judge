@@ -50,6 +50,7 @@ $(document).on('click', "button[name='gotoExercise']", function () {
         type: 'POST',
         url: 'func/directive.php',
         data: {
+            "action":"fetchExerciseDetail",
             "data": exerciseData[0]
         },
         success: function (data) {

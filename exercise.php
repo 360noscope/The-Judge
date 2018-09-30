@@ -1,10 +1,11 @@
 <?php 
 session_start();
+$exercise;
 if (!isset($_SESSION["stu_id"])) {
     header("Location: /the_judge/login.php");
     die();
 } else {
-    $exercise_result = $_SESSION["exercise_data"];
+    $exercise = json_decode($_POST["data"], true)[0];
 }
 ?>
 <!DOCTYPE html>
@@ -14,7 +15,7 @@ if (!isset($_SESSION["stu_id"])) {
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>The Judge:
-        <?php echo $exercise_result["exercise_name"]; ?>
+        <?php echo $exercise["exerciseName"]; ?>
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
@@ -74,9 +75,8 @@ if (!isset($_SESSION["stu_id"])) {
             </ul>
         </nav>
         <div class="content p-4">
-            <?php echo $exercise_result["done_msg"]; ?>
             <h1>Exercise:
-                <?php echo $exercise_result["exercise_name"] ?>
+                <?php echo $exercise["exerciseName"]; ?>
             </h1>
             <div class="row">
                 <div class="col-lg-12">
@@ -85,7 +85,7 @@ if (!isset($_SESSION["stu_id"])) {
                             <div class="card-block">
                                 <h4 class="card-title">Problem Detail</h4>
                                 <p class="card-text">
-                                    <?php echo $exercise_result["exercise_detail"]; ?>
+                                    <?php echo $exercise["exerciseDetail"]; ?>
                                 </p>
                             </div>
                         </div>
@@ -99,8 +99,8 @@ if (!isset($_SESSION["stu_id"])) {
                         <div class="card-body">
                             <div class="card-block">
                                 <h4 class="card-title">Hint</h4>
+                                <?php echo $exercise["exerciseHint"]; ?>
                                 <p class="card-text">
-                                    <?php echo $exercise_result["exercise_hint"]; ?>
                                 </p>
                             </div>
                         </div>
@@ -112,11 +112,15 @@ if (!isset($_SESSION["stu_id"])) {
                             <div class="card-block">
                                 <h4 class="card-title">Rule</h4>
                                 <p class="card-text">
-                                    <span class="badge badge-danger">Execution Time</span>
-                                    <?php echo $exercise_result["time_limit"]; ?> Sec</p>
+                                    <span class="badge badge-danger">Execution Time
+                                    </span>
+                                    <?php echo $exercise["timeLimit"]; ?> Sec
+                                </p>
                                 <p class="card-text">
-                                    <span class="badge badge-success">Memory</span>
-                                    <?php echo $exercise_result["memory_limit"]; ?> MB</p>
+                                    <span class="badge badge-success">Memory
+                                    </span>
+                                    <?php echo $exercise["memoryLimit"]; ?> MB
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -125,17 +129,17 @@ if (!isset($_SESSION["stu_id"])) {
             <div class="row">
                 <div class="col-md-6">
                     <h5 class="text-danger" id="fileTypeWarning"></h5>
-                    <form id="submit_form" enctype="multipart/form-data" onsubmit="event.preventDefault();" method="post"
-                        class="form-control">
+                    <form id="pySubmit" enctype="multipart/form-data" method="post">
                         <label class="text-black" for="user-input">Submit your work here :3</label>
                         <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
-                        <input type="hidden" name="action" value="judging" />
-                        <input type="file" name="exercise_file" accept=".py" required />
-                        <button type="submit" id="judge-file-submit" class="btn btn-success">I regret nothing!</button>
+                        <input type="file" name="exerciseFile" accept=".py" required />
+                        <input type="hidden" name="action" value="submitForJudge" />
+                        <button type="submit" class="btn btn-success">I regret nothing!</button>
                     </form>
                 </div>
             </div>
         </div>
+    </div>
     </div>
     <div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-md" role="document">
@@ -158,7 +162,7 @@ if (!isset($_SESSION["stu_id"])) {
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <img src="/img/loading.gif" alt="Loading" title="Loading" />
+                            <img src="/the_judge/img/loading.gif" alt="Loading" title="Loading" />
                         </div>
                     </div>
                 </div>

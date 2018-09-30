@@ -14,6 +14,7 @@ $auth = new Authentication();
 $lesson = new Lesson();
 $exercise = new Exercise();
 $user = new User();
+$judge = new Judge();
 
 switch ($_POST["action"]) {
     case "login":
@@ -93,6 +94,10 @@ switch ($_POST["action"]) {
         break;
     case "fetchExerciseDetail":
         echo $fetch->fetchExerciseDetail($_POST["data"]);
+        break;
+    case "submitForJudge":
+        $exercise_result = $judge->judging($_FILES['exerciseFile']);
+        echo $exercise_result;
         break;
 }
 ?>
