@@ -52,7 +52,6 @@ class Fetcher
         $_SESSION["selected_exercise"] = $id;
         $_SESSION["mem_limit"] = $memory;
         $_SESSION["time_limit"] = $exectime;
-        $_SESSION["selected_exercise_name"] = $name;
         $_SESSION["completed_score"] = $completed_score;
         return json_encode($result);
     }

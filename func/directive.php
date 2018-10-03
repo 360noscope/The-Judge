@@ -1,6 +1,4 @@
 <?php 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 session_start();
 include_once "Judge.php";
 include_once "Fetcher.php";
@@ -97,7 +95,7 @@ switch ($_POST["action"]) {
         break;
     case "submitForJudge":
         $exercise_result = $judge->judging($_FILES['exerciseFile']);
-        echo $exercise_result;
+        print_r($exercise_result);
         break;
 }
 ?>

@@ -1,24 +1,17 @@
 <?php 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 include_once("config.php");
 class Judge
 {
-    var $user_id, $exercise_id, $exercise_name, $memory_limit, $time_limit, $mysql_connection,
-        $completed_score, $con, $ftp_path;
+    var $user_id, $mysql_connection, $con, $ftp_path;
     public function __construct()
     {
         global $mysql_server, $username, $password, $database, $ftp_host, $ftp_port, $ftp_timeout,
             $ftp_path, $ftp_user, $ftp_pass;
         $this->user_id = $_SESSION["stu_id"];
-        $this->exercise_id = $_SESSION["selected_exercise"];
-        $this->memory_limit = $_SESSION["mem_limit"];
-        $this->time_limit = $_SESSION["time_limit"];
-        $this->exercise_name = $_SESSION["selected_exercise_name"];
-        $this->completed_score = $_SESSION["completed_score"];
         $this->ftp_path = $ftp_path;
         $this->con = ftp_connect($ftp_host, $ftp_port, $ftp_timeout);
         ftp_login($this->con, $ftp_user, $ftp_pass);
+        ftp_pasv($this->con, true);
         $this->mysql_connection = new mysqli($mysql_server, $username, $password, $database);
     }
 
@@ -53,8 +46,8 @@ class Judge
           3. Create excecute cmd instance for run code on started container
           4. Run that execute instance goddamn it!
           5. Kill that container after done
-          6. Remove input file if there're any
-         */
+          6. Remove input file if there're any*/
+
         $exec_result = array();
         $container_id = $this->createCodeContainer();
         $container_start_result = $this->startContainer($container_id);
@@ -68,15 +61,15 @@ class Judge
             }
             /*Need to use preg_replace() to remove special control char that coming from docker execute api response
             solution from below
-            https://stackoverflow.com/questions/1497885/remove-control-characters-from-php-string
-             */
+            https://stackoverflow.com/questions/1497885/remove-control-characters-from-php-string*/
+
             $result = preg_replace('/[\x00-\x1F\x7F]/', '', $this->startExecuter($exec_id));
             $result = str_replace("Killed", "", $result);
             if (strlen($result) != 0) {
                 $converted_res = ($testcase_item["output"] === $result) ? 'true' : 'false';
-                array_push($exec_result, array("case_number" => $case_counter, "result" => $converted_res, "output"=>$result, "score" => $testcase_item["score"]));
+                array_push($exec_result, array("case_number" => $case_counter, "result" => $converted_res, "output" => $result, "score" => $testcase_item["score"]));
             } else {
-                array_push($exec_result, array("case_number" => $case_counter, "result" => "T", "output"=>$result, "score" => $testcase_item["score"]));
+                array_push($exec_result, array("case_number" => $case_counter, "result" => "T", "output" => $result, "score" => $testcase_item["score"]));
             }
             $case_counter += 1;
         }
@@ -92,7 +85,7 @@ class Judge
     {
         $file_name = "";
         if ($file_input['name'] <> null) {
-            $file_name = "exercise-" . $this->user_id . "-" . $this->exercise_id . ".py";
+            $file_name = "exercise-" . $this->user_id . "-" . $_SESSION["selected_exercise"] . ".py";
             $file_path = $this->ftp_path . $file_name;
             ftp_put($this->con, $file_path, $file_input['tmp_name'], FTP_ASCII);
         } else {
@@ -104,7 +97,7 @@ class Judge
     private function inputUploader($input_count, $input)
     {
         $file_name = "";
-        $file_name = "testcase-" . $this->user_id . "-" . $this->exercise_id . "-" . $input_count . ".txt";
+        $file_name = "testcase-" . $this->user_id . "-" . $_SESSION["selected_exercise"] . "-" . $input_count . ".txt";
         $file_path = $this->ftp_path . $file_name;
         $fp = fopen('php://temp', 'r+');
         fwrite($fp, $input);
@@ -127,7 +120,7 @@ class Judge
     {
         $result = array();
         $stmt = $this->mysql_connection->prepare("SELECT input, output, score FROM exercise_testcase WHERE exercise_id = ?");
-        $stmt->bind_param("s", $this->exercise_id);
+        $stmt->bind_param("s", $_SESSION["selected_exercise"]);
         $stmt->execute();
         $stmt->bind_result($case_input, $case_output, $score);
         $input_output_counter = 1;
@@ -156,7 +149,7 @@ class Judge
                 "Binds" => array(
                     "/python-judge:/python-judge"
                 ),
-                "Memory" => (intval($this->memory_limit) * 1048576),
+                "Memory" => (intval($_SESSION["mem_limit"]) * 1048576),
                 "OomKillDisable" => false,
                 "AutoRemove" => true,
             )
@@ -196,7 +189,7 @@ class Judge
         global $sandbox_ip, $sandbox_port;
         //We used timeout function to kill python process within time limit
         //ref. https://busybox.net/downloads/BusyBox.html
-        $execute_cmd = "timeout -t " . $this->time_limit . " -s 'SIGKILL' python " . $file_name;
+        $execute_cmd = "timeout -t " . $_SESSION["time_limit"] . " -s 'SIGKILL' python " . $file_name;
         if ($input == true) {
             $execute_cmd .= " < " . $file_input_name;
         }
@@ -264,14 +257,15 @@ class Judge
         return $server_output;
     }
 
-    private function updatingUserScore($score){
+    private function updatingUserScore($score)
+    {
         $error;
-        try{
+        try {
             $stmt = $this->mysql_connection->prepare("UPDATE user_detail SET score + ? WHERE user_id =?");
             $stmt->bind_param("is", $score, $this->user_id);
             $stmt->execute();
             $stmt->close();
-        }catch(Exception $ex){
+        } catch (Exception $ex) {
             $error = $ex;
         }
         return $error;
@@ -293,7 +287,7 @@ class Judge
         }
         $stmt = $this->mysql_connection->prepare("SELECT COUNT(*) FROM exercise_session WHERE " .
             "user_id = ? AND exercise_id = ?");
-        $stmt->bind_param("ss", $this->user_id, $this->exercise_id);
+        $stmt->bind_param("ss", $this->user_id, $_SESSION["selected_exercise"]);
         $stmt->execute();
         $stmt->bind_result($countt);
         while ($stmt->fetch()) {
@@ -303,7 +297,7 @@ class Judge
         }
         $stmt->close();
 
-        $completed_total_score = $total_score + intval($this->completed_score);
+        $completed_total_score = $total_score + intval($_SESSION["completed_score"]);
         if ($is_session_exist === false) {
             $stmt = $this->mysql_connection->prepare("INSERT INTO exercise_session " .
                 "(user_id, exercise_id, passed_case, complete_date, try_date, total_score) VALUES(?, ?, ?, ?, ?, ?)");
@@ -311,7 +305,7 @@ class Judge
                 $stmt->bind_param(
                     "ssssss",
                     $this->user_id,
-                    $this->exercise_id,
+                    $_SESSION["selected_exercise"],
                     $passed_counter,
                     $date_str,
                     $date_str,
@@ -319,19 +313,19 @@ class Judge
                 );
             } else {
                 $datty = "-";
-                $stmt->bind_param("ssssss", $this->user_id, $this->exercise_id, $passed_counter, $datty, $date_str, $total_score);
+                $stmt->bind_param("ssssss", $this->user_id, $_SESSION["selected_exercise"], $passed_counter, $datty, $date_str, $total_score);
             }
             $stmt->execute();
-            $stmt->close();       
+            $stmt->close();
         } else {
             $stmt = $this->mysql_connection->prepare("UPDATE exercise_session SET " .
                 "try_date=?, complete_date=?, passed_case=?, total_score=? WHERE exercise_id = ? AND user_id = ?");
             if ($passed_counter === ($total_case - 1)) {
-                $stmt->bind_param("ssssss", $date_str, $date_str, $passed_counter, $completed_total_score, $this->exercise_id, $this->user_id);
+                $stmt->bind_param("ssssss", $date_str, $date_str, $passed_counter, $completed_total_score, $_SESSION["selected_exercise"], $this->user_id);
             } else {
                 //$test = $total_score;
                 $datty = "-";
-                $stmt->bind_param("ssssss", $date_str, $datty, $passed_counter, $total_score, $this->exercise_id, $this->user_id);
+                $stmt->bind_param("ssssss", $date_str, $datty, $passed_counter, $total_score, $_SESSION["selected_exercise"], $this->user_id);
             }
             $stmt->execute();
             $stmt->close();
@@ -342,6 +336,7 @@ class Judge
     public function __destruct()
     {
         $this->mysql_connection->close();
+        ftp_close($this->con);
     }
 }
 ?>
