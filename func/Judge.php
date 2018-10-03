@@ -2,12 +2,11 @@
 include_once("config.php");
 class Judge
 {
-    var $user_id, $mysql_connection, $con, $ftp_path;
+    var $mysql_connection, $con, $ftp_path;
     public function __construct()
     {
         global $mysql_server, $username, $password, $database, $ftp_host, $ftp_port, $ftp_timeout,
             $ftp_path, $ftp_user, $ftp_pass;
-        $this->user_id = $_SESSION["stu_id"];
         $this->ftp_path = $ftp_path;
         $this->con = ftp_connect($ftp_host, $ftp_port, $ftp_timeout);
         ftp_login($this->con, $ftp_user, $ftp_pass);
@@ -85,7 +84,7 @@ class Judge
     {
         $file_name = "";
         if ($file_input['name'] <> null) {
-            $file_name = "exercise-" . $this->user_id . "-" . $_SESSION["selected_exercise"] . ".py";
+            $file_name = "exercise-" . $_SESSION["stu_id"] . "-" . $_SESSION["selected_exercise"] . ".py";
             $file_path = $this->ftp_path . $file_name;
             ftp_put($this->con, $file_path, $file_input['tmp_name'], FTP_ASCII);
         } else {
@@ -97,7 +96,7 @@ class Judge
     private function inputUploader($input_count, $input)
     {
         $file_name = "";
-        $file_name = "testcase-" . $this->user_id . "-" . $_SESSION["selected_exercise"] . "-" . $input_count . ".txt";
+        $file_name = "testcase-" . $_SESSION["stu_id"] . "-" . $_SESSION["selected_exercise"] . "-" . $input_count . ".txt";
         $file_path = $this->ftp_path . $file_name;
         $fp = fopen('php://temp', 'r+');
         fwrite($fp, $input);
@@ -262,7 +261,7 @@ class Judge
         $error;
         try {
             $stmt = $this->mysql_connection->prepare("UPDATE user_detail SET score + ? WHERE user_id =?");
-            $stmt->bind_param("is", $score, $this->user_id);
+            $stmt->bind_param("is", $score, $_SESSION["stu_id"]);
             $stmt->execute();
             $stmt->close();
         } catch (Exception $ex) {
@@ -287,7 +286,7 @@ class Judge
         }
         $stmt = $this->mysql_connection->prepare("SELECT COUNT(*) FROM exercise_session WHERE " .
             "user_id = ? AND exercise_id = ?");
-        $stmt->bind_param("ss", $this->user_id, $_SESSION["selected_exercise"]);
+        $stmt->bind_param("ss", $_SESSION["stu_id"], $_SESSION["selected_exercise"]);
         $stmt->execute();
         $stmt->bind_result($countt);
         while ($stmt->fetch()) {
@@ -304,7 +303,7 @@ class Judge
             if ($passed_counter === ($total_case - 1)) {
                 $stmt->bind_param(
                     "ssssss",
-                    $this->user_id,
+                    $_SESSION["stu_id"],
                     $_SESSION["selected_exercise"],
                     $passed_counter,
                     $date_str,
@@ -313,7 +312,7 @@ class Judge
                 );
             } else {
                 $datty = "-";
-                $stmt->bind_param("ssssss", $this->user_id, $_SESSION["selected_exercise"], $passed_counter, $datty, $date_str, $total_score);
+                $stmt->bind_param("ssssss", $_SESSION["stu_id"], $_SESSION["selected_exercise"], $passed_counter, $datty, $date_str, $total_score);
             }
             $stmt->execute();
             $stmt->close();
@@ -321,11 +320,11 @@ class Judge
             $stmt = $this->mysql_connection->prepare("UPDATE exercise_session SET " .
                 "try_date=?, complete_date=?, passed_case=?, total_score=? WHERE exercise_id = ? AND user_id = ?");
             if ($passed_counter === ($total_case - 1)) {
-                $stmt->bind_param("ssssss", $date_str, $date_str, $passed_counter, $completed_total_score, $_SESSION["selected_exercise"], $this->user_id);
+                $stmt->bind_param("ssssss", $date_str, $date_str, $passed_counter, $completed_total_score, $_SESSION["selected_exercise"], $_SESSION["stu_id"]);
             } else {
                 //$test = $total_score;
                 $datty = "-";
-                $stmt->bind_param("ssssss", $date_str, $datty, $passed_counter, $total_score, $_SESSION["selected_exercise"], $this->user_id);
+                $stmt->bind_param("ssssss", $date_str, $datty, $passed_counter, $total_score, $_SESSION["selected_exercise"], $_SESSION["stu_id"]);
             }
             $stmt->execute();
             $stmt->close();
